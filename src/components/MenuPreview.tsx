@@ -17,7 +17,10 @@ const menuImages = [
 export function MenuPreview() {
   const { t } = useLanguage();
   const [activeImage, setActiveImage] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [slideOffset, setSlideOffset] = useState(0);
+  const dragStartX = useRef<number | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,6 +52,42 @@ export function MenuPreview() {
     setActiveImage((index) => (index + direction + menuImages.length) % menuImages.length);
   }
 
+  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    dragStartX.current = event.clientX;
+    setDragOffset(0);
+    setIsDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (dragStartX.current === null) {
+      return;
+    }
+
+    const nextOffset = event.clientX - dragStartX.current;
+    const maxDrag = slideOffset > 0 ? slideOffset * 0.48 : 160;
+
+    setDragOffset(Math.max(Math.min(nextOffset, maxDrag), -maxDrag));
+  }
+
+  function handlePointerEnd() {
+    if (dragStartX.current === null) {
+      return;
+    }
+
+    const threshold = slideOffset > 0 ? Math.min(slideOffset * 0.22, 90) : 56;
+
+    if (dragOffset <= -threshold) {
+      goToImage(1);
+    } else if (dragOffset >= threshold) {
+      goToImage(-1);
+    }
+
+    dragStartX.current = null;
+    setDragOffset(0);
+    setIsDragging(false);
+  }
+
   return (
     <section className="@container px-4 py-16 sm:px-8 sm:py-20 lg:py-24" id="menu">
       <div className="mx-auto max-w-7xl">
@@ -73,34 +112,46 @@ export function MenuPreview() {
           </Link>
         </div>
 
-        <div className="relative mt-8 overflow-hidden sm:mt-10">
+        <div className="relative mt-8 sm:mt-10">
           <div
-            className="flex gap-4 transition-transform duration-500 ease-out sm:gap-5"
-            ref={trackRef}
-            style={{ transform: `translateX(-${activeImage * slideOffset}px)` }}
+            className="relative overflow-hidden touch-pan-y"
+            onPointerCancel={handlePointerEnd}
+            onPointerDown={handlePointerDown}
+            onPointerLeave={handlePointerEnd}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerEnd}
           >
-            {menuImages.map((image, index) => (
-              <div
-                className="min-w-[76%] overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
-                key={image}
-              >
-                <img
-                  alt=""
-                  className="aspect-[0.92] h-full w-full object-cover sm:aspect-[0.94] lg:aspect-[0.9]"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  src={image}
-                />
-              </div>
-            ))}
-          </div>
+            <div
+              className={`flex gap-4 sm:gap-5 ${
+                isDragging ? "transition-none" : "transition-transform duration-500 ease-out"
+              }`}
+              ref={trackRef}
+              style={{ transform: `translateX(${dragOffset - activeImage * slideOffset}px)` }}
+            >
+              {menuImages.map((image, index) => (
+                <div
+                  className="min-w-[76%] overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
+                  key={image}
+                >
+                  <img
+                    alt=""
+                    className="aspect-[0.92] h-full w-full select-none object-cover sm:aspect-[0.94] lg:aspect-[0.9]"
+                    draggable={false}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    src={image}
+                  />
+                </div>
+              ))}
+            </div>
 
-          <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 sm:px-6">
-            <CarouselButton label="Previous menu image" onClick={() => goToImage(-1)}>
-              <ChevronLeft size={19} />
-            </CarouselButton>
-            <CarouselButton label="Next menu image" onClick={() => goToImage(1)}>
-              <ChevronRight size={19} />
-            </CarouselButton>
+            <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 sm:px-6">
+              <CarouselButton label="Previous menu image" onClick={() => goToImage(-1)}>
+                <ChevronLeft size={19} />
+              </CarouselButton>
+              <CarouselButton label="Next menu image" onClick={() => goToImage(1)}>
+                <ChevronRight size={19} />
+              </CarouselButton>
+            </div>
           </div>
 
           <div className="mx-auto mt-8 h-1 max-w-3xl bg-rice/22">
@@ -140,6 +191,7 @@ function CarouselButton({
       aria-label={label}
       className="pointer-events-auto grid size-12 place-items-center rounded-full border border-rice/18 bg-night/62 text-rice shadow-lg backdrop-blur transition hover:scale-105 hover:border-gold hover:text-gold"
       onClick={onClick}
+      onPointerDown={(event) => event.stopPropagation()}
       type="button"
     >
       {children}
