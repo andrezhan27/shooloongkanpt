@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, Flame, MapPin } from "lucide-react";
+import { Flame } from "lucide-react";
 import { useRef } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { MagneticButton } from "@/components/MagneticButton";
@@ -21,7 +21,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative flex min-h-[100svh] items-end overflow-hidden px-4 pb-12 pt-28 sm:px-8 sm:pb-14 sm:pt-32 lg:pb-20"
+      className="relative flex min-h-[100svh] items-end overflow-hidden px-4 pb-10 pt-28 sm:px-8 sm:pb-12 sm:pt-32 lg:pb-16"
       id="home"
       ref={ref}
     >
@@ -38,7 +38,7 @@ export function Hero() {
 
       <motion.div
         animate="show"
-        className="relative mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.42fr)] lg:items-end"
+        className="relative mx-auto w-full max-w-7xl"
         initial="hidden"
         variants={{
           hidden: {},
@@ -49,59 +49,30 @@ export function Hero() {
           <HeroLine>
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/35 bg-night/50 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-gold">
               <Flame size={15} />
-              {t({ pt: "Hotpot premium em Lisboa", en: "Premium hotpot in Lisbon" })}
+              {t({ pt: "Hot Pot Autêntico em Lisboa", en: "Authentic Hotpot in Lisbon" })}
             </span>
           </HeroLine>
           <HeroLine>
-            <h1 className="mt-6 max-w-5xl text-balance font-display text-[clamp(3.4rem,17vw,10rem)] font-semibold leading-[0.86] tracking-normal text-rice sm:mt-7 lg:leading-[0.82]">
-              Shoo
-              <br />
-              Loong Kan
+            <h1 className="mt-5 max-w-3xl text-balance font-display text-[clamp(2.7rem,8.5vw,5.6rem)] font-semibold leading-[0.94] tracking-normal text-rice sm:mt-6 lg:leading-[0.9]">
+              Shoo Loong Kan
             </h1>
           </HeroLine>
           <HeroLine>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-rice/76 sm:mt-7 sm:text-lg sm:leading-8">
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-rice/78 sm:mt-6 sm:text-xl sm:leading-9">
               {t({
-                pt: "Autêntico Hot Pot Chinês no coração de Lisboa.",
-                en: "Authentic Chinese Hotpot in the heart of Lisbon."
+                pt: "Um pote no centro da mesa. Escolhe os ingredientes, cozinha ao teu ritmo.",
+                en: "A pot at centre of the table. Choose your ingredients, cook at your rhythm."
               })}
             </p>
           </HeroLine>
           <HeroLine>
-            <div className="mt-8 flex flex-col gap-4 sm:mt-9 sm:flex-row sm:items-center">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
               <MagneticButton href={reserveUrl} className="w-full gap-2 sm:w-auto">
                 {t({ pt: "Reservar mesa", en: "Book a table" })}
               </MagneticButton>
-              <a
-                className="inline-flex min-h-12 items-center justify-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] text-rice/70 transition hover:text-rice sm:min-h-0 sm:justify-start"
-                href="#menu"
-              >
-                {t({ pt: "Ver menu", en: "View menu" })}
-                <ArrowDown size={16} />
-              </a>
             </div>
           </HeroLine>
         </div>
-
-        <HeroLine>
-          <div className="glass-panel hidden rounded-[32px] p-5 lg:block">
-            <div className="border-l border-gold/45 pl-5">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-gold">
-                {t({ pt: "Ambiente", en: "Atmosphere" })}
-              </p>
-              <p className="mt-4 font-display text-3xl leading-tight text-rice">
-                {t({
-                  pt: "Luz baixa, caldos a ferver e hospitalidade Sichuan.",
-                  en: "Low light, simmering broths, and Sichuan hospitality."
-                })}
-              </p>
-              <p className="mt-6 inline-flex items-center gap-2 text-sm text-rice/68">
-                <MapPin size={16} />
-                Lisboa, Portugal
-              </p>
-            </div>
-          </div>
-        </HeroLine>
       </motion.div>
     </section>
   );

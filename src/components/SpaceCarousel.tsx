@@ -46,21 +46,21 @@ export function SpaceCarousel() {
   }
 
   return (
-    <section className="@container px-4 py-20 sm:px-8 sm:py-24 lg:py-32" id="space">
+    <section className="@container px-4 py-16 sm:px-8 sm:py-20 lg:py-24" id="space">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-10 max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
+        <div className="mb-8 max-w-3xl">
+          {/* <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
             {t({ pt: "O nosso espaço", en: "Our space" })}
-          </p>
-          <h2 className="mt-4 text-balance font-display text-[clamp(2.35rem,10.5vw,3.75rem)] font-semibold leading-[0.96] text-rice sm:leading-none">
+          </p> */}
+          <h2 className="mt-4 text-balance font-display text-[clamp(1.9rem,5.5vw,2.5rem)] font-semibold leading-[0.96] text-gold sm:leading-none">
             {t({
-              pt: "Vermelho tradicional, madeira quente, e perfeito para socializar.",
-              en: "Traditional red, warm wood, and perfect to socialize."
+              pt: "O NOSSO ESPAÇO",
+              en: "OUR SPACE"
             })}
           </h2>
         </div>
 
-        <div className="grid gap-5 @5xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid gap-4 @5xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="relative min-h-[340px] overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.04] sm:min-h-[420px] @5xl:min-h-[620px]">
             <AnimatePresence mode="wait">
               <motion.img
@@ -98,7 +98,7 @@ export function SpaceCarousel() {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-3 @5xl:grid-cols-1">
+          <div className="grid grid-cols-4 gap-2 @5xl:grid-cols-1 @5xl:gap-3">
             {spaces.map((space, index) => (
               <button
                 aria-label={t(space.title)}
