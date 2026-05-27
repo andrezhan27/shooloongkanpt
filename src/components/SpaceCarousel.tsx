@@ -7,23 +7,19 @@ import { useLanguage } from "@/components/LanguageProvider";
 
 const spaces = [
   {
-    image:
-      "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1800&q=86",
+    image: "/images/space/space-01.jpg",
     title: { pt: "Salas de madeira escura", en: "Dark wood dining rooms" }
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1800&q=86",
+    image: "/images/space/space-02.jpg",
     title: { pt: "Mesas para partilhar", en: "Tables made for sharing" }
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=86",
+    image: "/images/space/space-03.jpg",
     title: { pt: "Luz íntima", en: "Intimate light" }
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1800&q=86",
+    image: "/images/space/space-4.jpg",
     title: { pt: "Noite em Lisboa", en: "Lisbon evenings" }
   }
 ];

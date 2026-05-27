@@ -6,33 +6,37 @@ import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const menuImages = [
-  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=84",
-  "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=84",
-  "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=84",
-  "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=1200&q=84",
-  "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=84",
-  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=84"
+  "/images/menu/menu-01.jpg",
+  "/images/menu/menu-02.jpg",
+  "/images/menu/menu-03.jpg",
+  "/images/menu/menu-04.jpg",
+  "/images/menu/menu-05.jpg",
+  "/images/menu/menu-06.jpg",
+  "/images/menu/menu-07.jpg",
+  "/images/menu/menu-08.jpg"
 ];
 
 export function MenuPreview() {
   const { t } = useLanguage();
   const [activeImage, setActiveImage] = useState(0);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [slideOffset, setSlideOffset] = useState(0);
-  const dragStartX = useRef<number | null>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const scrollFrame = useRef<number | null>(null);
+  const touchStartScrollLeft = useRef(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchSwiping = useRef(false);
 
   useEffect(() => {
     function updateSlideOffset() {
-      const track = trackRef.current;
-      const firstSlide = track?.firstElementChild;
+      const carousel = carouselRef.current;
+      const firstSlide = carousel?.firstElementChild;
 
-      if (!track || !(firstSlide instanceof HTMLElement)) {
+      if (!carousel || !(firstSlide instanceof HTMLElement)) {
         return;
       }
 
-      const gap = Number.parseFloat(window.getComputedStyle(track).columnGap) || 0;
+      const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap) || 0;
 
       setSlideOffset(firstSlide.offsetWidth + gap);
     }
@@ -41,51 +45,112 @@ export function MenuPreview() {
 
     const resizeObserver = new ResizeObserver(updateSlideOffset);
 
-    if (trackRef.current) {
-      resizeObserver.observe(trackRef.current);
+    if (carouselRef.current) {
+      resizeObserver.observe(carouselRef.current);
     }
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      resizeObserver.disconnect();
+
+      if (scrollFrame.current !== null) {
+        window.cancelAnimationFrame(scrollFrame.current);
+      }
+    };
   }, []);
 
   function goToImage(direction: number) {
-    setActiveImage((index) => (index + direction + menuImages.length) % menuImages.length);
-  }
+    const carousel = carouselRef.current;
 
-  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    dragStartX.current = event.clientX;
-    setDragOffset(0);
-    setIsDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
-    if (dragStartX.current === null) {
+    if (!carousel || slideOffset === 0) {
       return;
     }
 
-    const nextOffset = event.clientX - dragStartX.current;
-    const maxDrag = slideOffset > 0 ? slideOffset * 0.48 : 160;
+    const nextIndex = (activeImage + direction + menuImages.length) % menuImages.length;
 
-    setDragOffset(Math.max(Math.min(nextOffset, maxDrag), -maxDrag));
+    setActiveImage(nextIndex);
+    carousel.scrollTo({
+      behavior: "smooth",
+      left: nextIndex * slideOffset
+    });
   }
 
-  function handlePointerEnd() {
-    if (dragStartX.current === null) {
+  function handleScroll() {
+    const carousel = carouselRef.current;
+
+    if (!carousel || slideOffset === 0 || scrollFrame.current !== null) {
       return;
     }
 
-    const threshold = slideOffset > 0 ? Math.min(slideOffset * 0.22, 90) : 56;
+    scrollFrame.current = window.requestAnimationFrame(() => {
+      const nextIndex = Math.min(
+        menuImages.length - 1,
+        Math.max(0, Math.round(carousel.scrollLeft / slideOffset))
+      );
 
-    if (dragOffset <= -threshold) {
-      goToImage(1);
-    } else if (dragOffset >= threshold) {
-      goToImage(-1);
+      setActiveImage(nextIndex);
+      scrollFrame.current = null;
+    });
+  }
+
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    const carousel = carouselRef.current;
+    const touch = event.touches[0];
+
+    if (!carousel || !touch) {
+      return;
     }
 
-    dragStartX.current = null;
-    setDragOffset(0);
-    setIsDragging(false);
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    touchStartScrollLeft.current = carousel.scrollLeft;
+    touchSwiping.current = false;
+  }
+
+  function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    const carousel = carouselRef.current;
+    const touch = event.touches[0];
+
+    if (!carousel || !touch || touchStartX.current === null || touchStartY.current === null) {
+      return;
+    }
+
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+
+    if (!touchSwiping.current && Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      touchSwiping.current = true;
+    }
+
+    if (touchSwiping.current) {
+      event.preventDefault();
+      carousel.scrollLeft = touchStartScrollLeft.current - deltaX;
+    }
+  }
+
+  function handleTouchEnd() {
+    const carousel = carouselRef.current;
+
+    if (!carousel || slideOffset === 0 || !touchSwiping.current) {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      touchSwiping.current = false;
+      return;
+    }
+
+    const nextIndex = Math.min(
+      menuImages.length - 1,
+      Math.max(0, Math.round(carousel.scrollLeft / slideOffset))
+    );
+
+    setActiveImage(nextIndex);
+    carousel.scrollTo({
+      behavior: "smooth",
+      left: nextIndex * slideOffset
+    });
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchSwiping.current = false;
   }
 
   return (
@@ -112,25 +177,21 @@ export function MenuPreview() {
           </Link>
         </div>
 
-        <div className="relative mt-8 sm:mt-10">
-          <div
-            className="relative overflow-hidden touch-pan-y"
-            onPointerCancel={handlePointerEnd}
-            onPointerDown={handlePointerDown}
-            onPointerLeave={handlePointerEnd}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerEnd}
-          >
+        <div className="mt-8 sm:mt-10">
+          <div className="relative">
             <div
-              className={`flex gap-4 sm:gap-5 ${
-                isDragging ? "transition-none" : "transition-transform duration-500 ease-out"
-              }`}
-              ref={trackRef}
-              style={{ transform: `translateX(${dragOffset - activeImage * slideOffset}px)` }}
+              className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden"
+              onScroll={handleScroll}
+              onTouchCancel={handleTouchEnd}
+              onTouchEnd={handleTouchEnd}
+              onTouchMove={handleTouchMove}
+              onTouchStart={handleTouchStart}
+              ref={carouselRef}
+              style={{ WebkitOverflowScrolling: "touch" }}
             >
               {menuImages.map((image, index) => (
                 <div
-                  className="min-w-[76%] overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
+                  className="min-w-[76%] snap-start overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
                   key={image}
                 >
                   <img
@@ -191,7 +252,6 @@ function CarouselButton({
       aria-label={label}
       className="pointer-events-auto grid size-12 place-items-center rounded-full border border-rice/18 bg-night/62 text-rice shadow-lg backdrop-blur transition hover:scale-105 hover:border-gold hover:text-gold"
       onClick={onClick}
-      onPointerDown={(event) => event.stopPropagation()}
       type="button"
     >
       {children}
