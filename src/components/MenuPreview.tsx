@@ -6,29 +6,26 @@ import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const menuImages = [
-  "/images/menu/menu-01.jpg",
-  "/images/menu/menu-02.jpg",
-  "/images/menu/menu-03.jpg",
-  "/images/menu/menu-04.jpg",
-  "/images/menu/menu-05.jpg",
-  "/images/menu/menu-06.jpg",
-  "/images/menu/menu-07.jpg",
-  "/images/menu/menu-08.jpg"
+  "/images/menu/menu-01.webp",
+  "/images/menu/menu-02.webp",
+  "/images/menu/menu-03.webp",
+  "/images/menu/menu-04.webp",
+  "/images/menu/menu-05.webp",
+  "/images/menu/menu-06.webp",
+  "/images/menu/menu-07.webp",
+  "/images/menu/menu-08.webp"
 ];
 
 export function MenuPreview() {
   const { t } = useLanguage();
-  const [activeImage, setActiveImage] = useState(0);
+  const [maxSlideIndex, setMaxSlideIndex] = useState(menuImages.length - 1);
+  const [scrollProgress, setScrollProgress] = useState({ thumbLeft: 0, thumbWidth: 100 });
   const [slideOffset, setSlideOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollFrame = useRef<number | null>(null);
-  const touchStartScrollLeft = useRef(0);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
-  const touchSwiping = useRef(false);
 
   useEffect(() => {
-    function updateSlideOffset() {
+    function updateCarouselMetrics() {
       const carousel = carouselRef.current;
       const firstSlide = carousel?.firstElementChild;
 
@@ -37,16 +34,28 @@ export function MenuPreview() {
       }
 
       const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap) || 0;
+      const nextSlideOffset = firstSlide.offsetWidth + gap;
+      const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
 
-      setSlideOffset(firstSlide.offsetWidth + gap);
+      setSlideOffset(nextSlideOffset);
+      setMaxSlideIndex(
+        Math.min(menuImages.length - 1, nextSlideOffset === 0 ? 0 : Math.ceil(maxScrollLeft / nextSlideOffset))
+      );
+      updateScrollProgress(carousel);
     }
 
-    updateSlideOffset();
+    updateCarouselMetrics();
 
-    const resizeObserver = new ResizeObserver(updateSlideOffset);
+    const resizeObserver = new ResizeObserver(updateCarouselMetrics);
 
     if (carouselRef.current) {
       resizeObserver.observe(carouselRef.current);
+
+      const firstSlide = carouselRef.current.firstElementChild;
+
+      if (firstSlide instanceof HTMLElement) {
+        resizeObserver.observe(firstSlide);
+      }
     }
 
     return () => {
@@ -58,6 +67,18 @@ export function MenuPreview() {
     };
   }, []);
 
+  function updateScrollProgress(carousel: HTMLDivElement, scrollLeft = carousel.scrollLeft) {
+    const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+    const thumbWidth = carousel.scrollWidth === 0
+      ? 100
+      : Math.min(100, Math.max(8, (carousel.clientWidth / carousel.scrollWidth) * 100));
+    const thumbLeft = maxScrollLeft === 0
+      ? 0
+      : (scrollLeft / maxScrollLeft) * (100 - thumbWidth);
+
+    setScrollProgress({ thumbLeft, thumbWidth });
+  }
+
   function goToImage(direction: number) {
     const carousel = carouselRef.current;
 
@@ -65,12 +86,22 @@ export function MenuPreview() {
       return;
     }
 
-    const nextIndex = (activeImage + direction + menuImages.length) % menuImages.length;
+    const currentIndex = Math.min(
+      maxSlideIndex,
+      Math.max(0, Math.round(carousel.scrollLeft / slideOffset))
+    );
+    const nextIndex = currentIndex + direction < 0
+      ? maxSlideIndex
+      : currentIndex + direction > maxSlideIndex
+        ? 0
+        : currentIndex + direction;
+    const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+    const targetScrollLeft = Math.min(maxScrollLeft, nextIndex * slideOffset);
 
-    setActiveImage(nextIndex);
+    updateScrollProgress(carousel, targetScrollLeft);
     carousel.scrollTo({
       behavior: "smooth",
-      left: nextIndex * slideOffset
+      left: targetScrollLeft
     });
   }
 
@@ -82,75 +113,9 @@ export function MenuPreview() {
     }
 
     scrollFrame.current = window.requestAnimationFrame(() => {
-      const nextIndex = Math.min(
-        menuImages.length - 1,
-        Math.max(0, Math.round(carousel.scrollLeft / slideOffset))
-      );
-
-      setActiveImage(nextIndex);
+      updateScrollProgress(carousel);
       scrollFrame.current = null;
     });
-  }
-
-  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
-    const carousel = carouselRef.current;
-    const touch = event.touches[0];
-
-    if (!carousel || !touch) {
-      return;
-    }
-
-    touchStartX.current = touch.clientX;
-    touchStartY.current = touch.clientY;
-    touchStartScrollLeft.current = carousel.scrollLeft;
-    touchSwiping.current = false;
-  }
-
-  function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
-    const carousel = carouselRef.current;
-    const touch = event.touches[0];
-
-    if (!carousel || !touch || touchStartX.current === null || touchStartY.current === null) {
-      return;
-    }
-
-    const deltaX = touch.clientX - touchStartX.current;
-    const deltaY = touch.clientY - touchStartY.current;
-
-    if (!touchSwiping.current && Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      touchSwiping.current = true;
-    }
-
-    if (touchSwiping.current) {
-      event.preventDefault();
-      carousel.scrollLeft = touchStartScrollLeft.current - deltaX;
-    }
-  }
-
-  function handleTouchEnd() {
-    const carousel = carouselRef.current;
-
-    if (!carousel || slideOffset === 0 || !touchSwiping.current) {
-      touchStartX.current = null;
-      touchStartY.current = null;
-      touchSwiping.current = false;
-      return;
-    }
-
-    const nextIndex = Math.min(
-      menuImages.length - 1,
-      Math.max(0, Math.round(carousel.scrollLeft / slideOffset))
-    );
-
-    setActiveImage(nextIndex);
-    carousel.scrollTo({
-      behavior: "smooth",
-      left: nextIndex * slideOffset
-    });
-
-    touchStartX.current = null;
-    touchStartY.current = null;
-    touchSwiping.current = false;
   }
 
   return (
@@ -180,18 +145,14 @@ export function MenuPreview() {
         <div className="mt-8 sm:mt-10">
           <div className="relative">
             <div
-              className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden"
+              className="flex snap-x snap-proximity gap-4 overflow-x-auto scroll-smooth overscroll-x-contain scroll-px-4 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] sm:snap-mandatory sm:gap-5 [&::-webkit-scrollbar]:hidden"
               onScroll={handleScroll}
-              onTouchCancel={handleTouchEnd}
-              onTouchEnd={handleTouchEnd}
-              onTouchMove={handleTouchMove}
-              onTouchStart={handleTouchStart}
               ref={carouselRef}
               style={{ WebkitOverflowScrolling: "touch" }}
             >
               {menuImages.map((image, index) => (
                 <div
-                  className="min-w-[76%] snap-start overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
+                  className="min-w-[72%] snap-start overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
                   key={image}
                 >
                   <img
@@ -205,7 +166,7 @@ export function MenuPreview() {
               ))}
             </div>
 
-            <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 sm:px-6">
+            <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-between px-3 sm:flex sm:px-6">
               <CarouselButton label="Previous menu image" onClick={() => goToImage(-1)}>
                 <ChevronLeft size={19} />
               </CarouselButton>
@@ -215,12 +176,12 @@ export function MenuPreview() {
             </div>
           </div>
 
-          <div className="mx-auto mt-8 h-1 max-w-3xl bg-rice/22">
+          <div className="relative mt-8 h-1 w-full overflow-hidden bg-rice/22">
             <div
-              className="h-full bg-rice transition-all duration-500"
+              className="absolute top-0 h-full bg-rice transition-all duration-500"
               style={{
-                width: `${100 / menuImages.length}%`,
-                transform: `translateX(${activeImage * 100}%)`
+                left: `${scrollProgress.thumbLeft}%`,
+                width: `${scrollProgress.thumbWidth}%`
               }}
             />
           </div>

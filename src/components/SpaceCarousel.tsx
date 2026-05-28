@@ -2,24 +2,24 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const spaces = [
   {
-    image: "/images/space/space-01.jpg",
+    image: "/images/space/space-01.webp",
     title: { pt: "Salas de madeira escura", en: "Dark wood dining rooms" }
   },
   {
-    image: "/images/space/space-02.jpg",
+    image: "/images/space/space-02.webp",
     title: { pt: "Mesas para partilhar", en: "Tables made for sharing" }
   },
   {
-    image: "/images/space/space-03.jpg",
+    image: "/images/space/space-03.webp",
     title: { pt: "Luz íntima", en: "Intimate light" }
   },
   {
-    image: "/images/space/space-4.jpg",
+    image: "/images/space/space-4.webp",
     title: { pt: "Noite em Lisboa", en: "Lisbon evenings" }
   }
 ];
@@ -28,14 +28,6 @@ export function SpaceCarousel() {
   const { t } = useLanguage();
   const [active, setActive] = useState(0);
   const current = spaces[active];
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActive((index) => (index + 1) % spaces.length);
-    }, 5200);
-
-    return () => window.clearInterval(timer);
-  }, []);
 
   function go(direction: number) {
     setActive((index) => (index + direction + spaces.length) % spaces.length);
@@ -70,19 +62,7 @@ export function SpaceCarousel() {
                 transition={{ duration: 0.7, ease: "easeOut" }}
               />
             </AnimatePresence>
-            <div className="absolute inset-0 bg-gradient-to-t from-night/78 via-transparent to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-5 sm:p-8">
-              <AnimatePresence mode="wait">
-                <motion.p
-                  animate={{ opacity: 1, y: 0 }}
-                  className="max-w-[85%] text-balance font-display text-[2rem] font-semibold leading-tight text-rice sm:text-5xl"
-                  exit={{ opacity: 0, y: 12 }}
-                  initial={{ opacity: 0, y: 12 }}
-                  key={current.title.en}
-                >
-                  {t(current.title)}
-                </motion.p>
-              </AnimatePresence>
+            <div className="absolute bottom-0 left-0 right-0 flex items-end justify-end gap-4 p-5 sm:p-8">
               <div className="hidden gap-2 sm:flex">
                 <CarouselButton label="Previous image" onClick={() => go(-1)}>
                   <ChevronLeft size={19} />

@@ -5,7 +5,6 @@ import { CalendarCheck, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { type Language, useLanguage } from "@/components/LanguageProvider";
-import { MagneticButton } from "@/components/MagneticButton";
 
 const navItems = [
   { href: "/#home", label: { pt: "Início", en: "Home" } },
@@ -23,10 +22,15 @@ export function Navbar() {
       <nav className="glass-panel mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between gap-3 rounded-full px-3 sm:px-5">
         <Link
           href="/#home"
-          className="min-w-0 shrink truncate font-display text-lg font-semibold tracking-wide text-rice min-[380px]:text-xl sm:text-2xl"
+          className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-rice sm:size-14"
           onClick={() => setIsOpen(false)}
+          aria-label="Shoo Loong Kan home"
         >
-          Shoo Loong Kan
+          <img
+            alt=""
+            className="max-h-[88%] max-w-[88%] object-contain"
+            src="/images/header/output.webp"
+          />
         </Link>
 
         <div className="hidden items-center gap-8 lg:flex">
@@ -46,10 +50,15 @@ export function Navbar() {
             <LanguageToggle language={language} setLanguage={setLanguage} />
           </div>
           <div className="hidden sm:block">
-            <MagneticButton href={reserveUrl} className="gap-2 px-5">
+            <a
+              className="border-beam inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              href={reserveUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
               <CalendarCheck size={17} strokeWidth={1.8} />
               {t({ pt: "Reservar", en: "Book" })}
-            </MagneticButton>
+            </a>
           </div>
           <button
             aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -87,13 +96,16 @@ export function Navbar() {
                   {t(item.label)}
                 </Link>
               ))}
-              <MagneticButton
+              <a
                 href={reserveUrl}
-                className="mt-2 w-full gap-2 sm:hidden"
+                className="border-beam mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:hidden"
+                onClick={() => setIsOpen(false)}
+                rel="noreferrer"
+                target="_blank"
               >
                 <CalendarCheck size={17} strokeWidth={1.8} />
                 {t({ pt: "Reservar", en: "Book" })}
-              </MagneticButton>
+              </a>
             </div>
           </motion.div>
         ) : null}

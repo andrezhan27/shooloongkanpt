@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Flame } from "lucide-react";
+import { CalendarCheck, Flame } from "lucide-react";
 import { useRef } from "react";
+import { BoltFoodLogo } from "@/components/BoltFoodLogo";
 import { useLanguage } from "@/components/LanguageProvider";
-import { MagneticButton } from "@/components/MagneticButton";
 
 const heroImage = "/images/hero/hero.webp";
+const boltFoodUrl = "https://food.bolt.eu/en/386-lisbon/p/195603-shoo-loong-kan-hotpot/";
 const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
 
 export function Hero() {
@@ -67,9 +68,28 @@ export function Hero() {
           </HeroLine>
           <HeroLine>
             <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
-              <MagneticButton href={reserveUrl} className="w-full gap-2 sm:w-auto">
-                {t({ pt: "Reservar mesa", en: "Book a table" })}
-              </MagneticButton>
+              <a
+                className="border-beam inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.12em] text-rice shadow-glow transition duration-300 hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:w-auto"
+                href={reserveUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <CalendarCheck size={18} />
+                <span className="whitespace-nowrap">
+                  {t({ pt: "Reservar", en: "Book a table" })}
+                </span>
+              </a>
+              <a
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-rice/14 bg-night/35 px-6 text-sm font-semibold uppercase tracking-[0.12em] text-rice/82 transition hover:scale-[1.01] hover:border-gold hover:text-rice focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold sm:w-auto"
+                href={boltFoodUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <BoltFoodLogo />
+                <span className="whitespace-nowrap">
+                  {t({ pt: "Pedir Online", en: "Order Online" })}
+                </span>
+              </a>
             </div>
           </HeroLine>
         </div>
