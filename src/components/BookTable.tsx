@@ -1,7 +1,6 @@
 "use client";
 
 import { CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
-import { motion } from "framer-motion";
 import { BoltFoodLogo } from "@/components/BoltFoodLogo";
 import { useLanguage } from "@/components/LanguageProvider";
 
@@ -14,12 +13,8 @@ export function BookTable() {
 
   return (
     <section className="px-4 py-14 sm:px-8 sm:py-20 lg:py-24" id="book">
-      <motion.div
+      <div
         className="mx-auto grid max-w-7xl gap-8 border-y border-rice/10 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(470px,0.56fr)] lg:items-stretch lg:py-14"
-        initial={{ opacity: 0, y: 24 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true, margin: "-80px" }}
-        whileInView={{ opacity: 1, y: 0 }}
       >
         <div className="rounded-lg border border-rice/10 bg-rice/[0.025] p-5 shadow-[0_24px_80px_rgb(0_0_0/.14)] sm:p-7 lg:flex lg:flex-col lg:justify-center lg:p-8">
           <div className="max-w-3xl">
@@ -115,7 +110,7 @@ export function BookTable() {
             />
           </div>
         </aside>
-      </motion.div>
+      </div>
     </section>
   );
 }

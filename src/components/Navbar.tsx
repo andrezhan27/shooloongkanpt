@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { CalendarCheck, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -76,45 +75,38 @@ export function Navbar() {
         </div>
       </nav>
 
-      <AnimatePresence>
-        {isOpen ? (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-panel mx-auto mt-3 max-w-7xl rounded-[24px] p-3 lg:hidden"
-            exit={{ opacity: 0, y: -12 }}
-            initial={{ opacity: 0, y: -12 }}
-          >
-            <div className="flex flex-col gap-2">
-              <div className="mb-1 flex items-center justify-between rounded-2xl bg-rice/6 px-4 py-3 sm:hidden">
-                <span className="text-xs font-bold uppercase tracking-[0.18em] text-gold">
-                  {t({ pt: "Idioma", en: "Language" })}
-                </span>
-                <LanguageToggle language={language} setLanguage={setLanguage} />
-              </div>
-              {navItems.map((item) => (
-                <Link
-                  className="min-h-12 rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-rice/78 transition hover:bg-rice/8 hover:text-rice"
-                  href={item.href}
-                  key={item.href}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {t(item.label)}
-                </Link>
-              ))}
-              <a
-                href={reserveUrl}
-                className="border-beam mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:hidden"
-                onClick={() => setIsOpen(false)}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <CalendarCheck size={17} strokeWidth={1.8} />
-                {t({ pt: "Reservar", en: "Book" })}
-              </a>
+      {isOpen ? (
+        <div className="glass-panel mx-auto mt-3 max-w-7xl rounded-[24px] p-3 lg:hidden">
+          <div className="flex flex-col gap-2">
+            <div className="mb-1 flex items-center justify-between rounded-2xl bg-rice/6 px-4 py-3 sm:hidden">
+              <span className="text-xs font-bold uppercase tracking-[0.18em] text-gold">
+                {t({ pt: "Idioma", en: "Language" })}
+              </span>
+              <LanguageToggle language={language} setLanguage={setLanguage} />
             </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+            {navItems.map((item) => (
+              <Link
+                className="min-h-12 rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-rice/78 transition hover:bg-rice/8 hover:text-rice"
+                href={item.href}
+                key={item.href}
+                onClick={() => setIsOpen(false)}
+              >
+                {t(item.label)}
+              </Link>
+            ))}
+            <a
+              href={reserveUrl}
+              className="border-beam mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:hidden"
+              onClick={() => setIsOpen(false)}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <CalendarCheck size={17} strokeWidth={1.8} />
+              {t({ pt: "Reservar", en: "Book" })}
+            </a>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }
@@ -132,10 +124,10 @@ function LanguageToggle({
       className="relative grid grid-cols-2 rounded-full border border-rice/15 bg-rice/8 p-1 text-xs font-bold uppercase tracking-[0.14em] text-rice/76"
       role="group"
     >
-      <motion.span
-        animate={{ x: language === "pt" ? 0 : "100%" }}
-        className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-rice text-ink"
-        transition={{ type: "spring", stiffness: 420, damping: 32 }}
+      <span
+        className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-rice text-ink transition-transform duration-200 ${
+          language === "pt" ? "translate-x-0" : "translate-x-full"
+        }`}
       />
       {(["pt", "en"] as const).map((option) => (
         <button

@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -50,18 +49,12 @@ export function SpaceCarousel() {
 
         <div className="grid gap-4 @5xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="relative min-h-[340px] overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.04] sm:min-h-[420px] @5xl:min-h-[620px]">
-            <AnimatePresence mode="wait">
-              <motion.img
-                alt=""
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute inset-0 h-full w-full object-cover"
-                exit={{ opacity: 0, scale: 1.025 }}
-                initial={{ opacity: 0, scale: 1.04 }}
-                key={current.image}
-                src={current.image}
-                transition={{ duration: 0.7, ease: "easeOut" }}
-              />
-            </AnimatePresence>
+            <img
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              key={current.image}
+              src={current.image}
+            />
             <div className="absolute bottom-0 left-0 right-0 flex items-end justify-end gap-4 p-5 sm:p-8">
               <div className="hidden gap-2 sm:flex">
                 <CarouselButton label="Previous image" onClick={() => go(-1)}>
