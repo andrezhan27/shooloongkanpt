@@ -19,7 +19,7 @@ const spaces = [
     title: { pt: "Luz íntima", en: "Intimate light" }
   },
   {
-    image: "/images/space/space-4.webp",
+    image: "/images/space/space-04.webp",
     title: { pt: "Noite em Lisboa", en: "Lisbon evenings" }
   }
 ];
