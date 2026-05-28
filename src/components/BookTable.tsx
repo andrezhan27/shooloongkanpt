@@ -14,9 +14,9 @@ export function BookTable() {
   return (
     <section className="px-4 py-14 sm:px-8 sm:py-20 lg:py-24" id="book">
       <div
-        className="mx-auto grid max-w-7xl gap-8 border-y border-rice/10 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(470px,0.56fr)] lg:items-stretch lg:py-14"
+        className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.03] shadow-[0_24px_80px_rgb(0_0_0/.22)] backdrop-blur-xl lg:grid-cols-[minmax(0,1fr)_minmax(470px,0.56fr)] lg:items-stretch"
       >
-        <div className="rounded-lg border border-rice/10 bg-rice/[0.025] p-5 shadow-[0_24px_80px_rgb(0_0_0/.14)] sm:p-7 lg:flex lg:flex-col lg:justify-center lg:p-8">
+        <div className="p-5 sm:p-7 lg:flex lg:flex-col lg:justify-center lg:p-8">
           <div className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
               {t({ pt: "Reservas", en: "Reservations" })}
@@ -37,10 +37,10 @@ export function BookTable() {
         </div>
 
         <aside
-          className="scroll-mt-28 rounded-lg border border-rice/10 bg-rice/[0.035] p-4 shadow-[0_24px_80px_rgb(0_0_0/.22)] backdrop-blur-xl sm:p-5 lg:p-6"
+          className="scroll-mt-28 p-4 sm:p-5 lg:border-l lg:border-rice/10 lg:p-6"
           id="contact"
         >
-          <div className="border-b border-rice/10 pb-4">
+          <div className="hidden border-b border-rice/10 pb-4 lg:block">
             <div className="min-w-0">
               <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-gold">
                 {t({ pt: "Restaurante", en: "Restaurant" })}

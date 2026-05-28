@@ -53,8 +53,8 @@ export function Footer() {
           </Link>
           <p className="mt-2">
             {t({
-              pt: "Hotpot chinês premium em Lisboa.",
-              en: "Premium Chinese hotpot in Lisbon."
+              pt: "Hot Pot Autêntico em Lisboa.",
+              en: "Authentic Hotpot in Lisbon."
             })}
           </p>
         </div>
