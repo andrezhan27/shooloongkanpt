@@ -178,7 +178,7 @@ export function MenuPreview() {
 
           <div className="relative mt-8 h-1 w-full overflow-hidden bg-rice/22">
             <div
-              className="absolute top-0 h-full bg-rice transition-all duration-500"
+              className="absolute top-0 h-full bg-rice"
               style={{
                 left: `${scrollProgress.thumbLeft}%`,
                 width: `${scrollProgress.thumbWidth}%`

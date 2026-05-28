@@ -22,15 +22,20 @@ export function Navbar() {
       <nav className="glass-panel mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between gap-3 rounded-full px-3 sm:px-5">
         <Link
           href="/#home"
-          className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-rice sm:size-14"
+          className="flex min-w-0 shrink items-center gap-2 sm:gap-3"
           onClick={() => setIsOpen(false)}
           aria-label="Shoo Loong Kan home"
         >
-          <img
-            alt=""
-            className="max-h-[88%] max-w-[88%] object-contain"
-            src="/images/header/output.webp"
-          />
+          <span className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-rice sm:size-14">
+            <img
+              alt=""
+              className="max-h-[88%] max-w-[88%] object-contain"
+              src="/images/header/output.webp"
+            />
+          </span>
+          <span className="min-w-0 truncate font-display text-lg font-semibold tracking-wide text-rice min-[380px]:text-xl sm:text-2xl">
+            Shoo Loong Kan
+          </span>
         </Link>
 
         <div className="hidden items-center gap-8 lg:flex">

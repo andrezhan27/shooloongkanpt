@@ -15,35 +15,37 @@ export function BookTable() {
   return (
     <section className="px-4 py-14 sm:px-8 sm:py-20 lg:py-24" id="book">
       <motion.div
-        className="mx-auto grid max-w-7xl gap-8 border-y border-rice/10 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.52fr)] lg:items-center lg:py-14"
+        className="mx-auto grid max-w-7xl gap-8 border-y border-rice/10 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(470px,0.56fr)] lg:items-stretch lg:py-14"
         initial={{ opacity: 0, y: 24 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true, margin: "-80px" }}
         whileInView={{ opacity: 1, y: 0 }}
       >
-        <div className="lg:pr-10">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
-            {t({ pt: "Reservas", en: "Reservations" })}
-          </p>
-          <h2 className="mt-3 max-w-2xl text-balance font-display text-[clamp(2.25rem,9vw,3.55rem)] font-semibold leading-[0.96] text-rice sm:leading-none">
-            {t({
-              pt: "Reserva a tua mesa agora.",
-              en: "Reserve your table now."
-            })}
-          </h2>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-rice/72 sm:leading-8 lg:text-[0.98rem]">
-            {t({
-              pt: "Reserve para jantares íntimos, celebrações e grupos que querem descobrir o hotpot no seu melhor.",
-              en: "Book intimate dinners, celebrations, and group tables for hotpot at its most generous."
-            })}
-          </p>
+        <div className="rounded-lg border border-rice/10 bg-rice/[0.025] p-5 shadow-[0_24px_80px_rgb(0_0_0/.14)] sm:p-7 lg:flex lg:flex-col lg:justify-center lg:p-8">
+          <div className="max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
+              {t({ pt: "Reservas", en: "Reservations" })}
+            </p>
+            <h2 className="mt-3 max-w-2xl text-balance font-display text-[clamp(2.25rem,9vw,3.55rem)] font-semibold leading-[0.96] text-rice sm:leading-none">
+              {t({
+                pt: "Reserva a tua mesa agora.",
+                en: "Reserve your table now."
+              })}
+            </h2>
+            <p className="mt-4 text-base leading-7 text-rice/72 sm:leading-8 lg:text-[0.98rem]">
+              {t({
+                pt: "Reserve para jantares íntimos, celebrações e grupos que querem descobrir o hotpot no seu melhor.",
+                en: "Book intimate dinners, celebrations, and group tables for hotpot at its most generous."
+              })}
+            </p>
+          </div>
         </div>
 
         <aside
           className="scroll-mt-28 rounded-lg border border-rice/10 bg-rice/[0.035] p-4 shadow-[0_24px_80px_rgb(0_0_0/.22)] backdrop-blur-xl sm:p-5 lg:p-6"
           id="contact"
         >
-          <div className="flex items-start justify-between gap-4 border-b border-rice/10 pb-4">
+          <div className="border-b border-rice/10 pb-4">
             <div className="min-w-0">
               <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-gold">
                 {t({ pt: "Restaurante", en: "Restaurant" })}
@@ -51,19 +53,7 @@ export function BookTable() {
               <h3 className="mt-2 font-display text-3xl font-semibold leading-none text-rice sm:text-[2rem]">
                 Shoo Loong Kan
               </h3>
-              <p className="mt-2 text-sm font-medium text-rice/62">
-                {t({ pt: "Oriente, Lisboa", en: "Oriente, Lisbon" })}
-              </p>
             </div>
-            <a
-              aria-label={t({ pt: "Abrir no Google Maps", en: "Open in Google Maps" })}
-              className="grid size-11 shrink-0 place-items-center rounded-lg border border-rice/12 bg-night/44 text-rice/78 transition hover:border-gold hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
-              href={mapsUrl}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <MapPin size={19} />
-            </a>
           </div>
 
           <div className="grid gap-3 py-4 sm:grid-cols-2">
