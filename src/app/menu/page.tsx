@@ -15,17 +15,23 @@ export default function MenuPage() {
           Menu
         </h1>
 
-        <div className="mt-8 overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.035] shadow-2xl shadow-black/30 sm:mt-10">
+        <a
+          aria-label="Open full-resolution menu"
+          className="mt-8 block overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.035] shadow-2xl shadow-black/30 sm:mt-10"
+          href={menuImage.src}
+          rel="noreferrer"
+          target="_blank"
+        >
           <Image
             alt={menuImage.alt}
-            className="h-auto w-full"
+            className="h-auto w-full cursor-zoom-in"
             height={menuImage.height}
             priority
             sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 64px), 1152px"
             src={menuImage.src}
             width={menuImage.width}
           />
-        </div>
+        </a>
       </section>
     </main>
   );
