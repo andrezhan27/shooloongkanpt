@@ -23,6 +23,7 @@ const socialLinks = [
 ];
 
 const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
+const privacyPolicyUrl = "https://drive.google.com/file/d/1ZiqLvfXkKviPHelRA2EzlGzT23AWRh5R/view?usp=sharing";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -62,7 +63,7 @@ export function Footer() {
         </div>
         <div className="flex flex-col gap-5 sm:items-start md:items-end">
           <div className="flex flex-wrap gap-5 uppercase tracking-[0.16em]">
-            <Link className="transition hover:text-rice" href="/#menu">
+            <Link className="transition hover:text-rice" href="/menu">
               Menu
             </Link>
             <Link className="transition hover:text-rice" href="/#contact">
@@ -75,6 +76,14 @@ export function Footer() {
               target="_blank"
             >
               {t({ pt: "Reservar", en: "Book" })}
+            </a>
+            <a
+              className="transition hover:text-rice"
+              href={privacyPolicyUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {t({ pt: "Privacidade", en: "Privacy" })}
             </a>
           </div>
           <div className="flex gap-3">

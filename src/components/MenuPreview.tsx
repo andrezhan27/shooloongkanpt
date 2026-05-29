@@ -5,20 +5,13 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 
-const menuImages = [
-  "/images/menu/menu-01.webp",
-  "/images/menu/menu-02.webp",
-  "/images/menu/menu-03.webp",
-  "/images/menu/menu-04.webp",
-  "/images/menu/menu-05.webp",
-  "/images/menu/menu-06.webp",
-  "/images/menu/menu-07.webp",
-  "/images/menu/menu-08.webp"
-];
+type MenuPreviewProps = {
+  images: string[];
+};
 
-export function MenuPreview() {
+export function MenuPreview({ images }: MenuPreviewProps) {
   const { t } = useLanguage();
-  const [maxSlideIndex, setMaxSlideIndex] = useState(menuImages.length - 1);
+  const [maxSlideIndex, setMaxSlideIndex] = useState(Math.max(0, images.length - 1));
   const [scrollProgress, setScrollProgress] = useState({ thumbLeft: 0, thumbWidth: 100 });
   const [slideOffset, setSlideOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -40,7 +33,7 @@ export function MenuPreview() {
 
       setSlideOffset(nextSlideOffset);
       setMaxSlideIndex(
-        Math.min(menuImages.length - 1, nextSlideOffset === 0 ? 0 : Math.ceil(maxScrollLeft / nextSlideOffset))
+        Math.max(0, Math.min(images.length - 1, nextSlideOffset === 0 ? 0 : Math.ceil(maxScrollLeft / nextSlideOffset)))
       );
       updateScrollProgress(carousel);
     }
@@ -70,7 +63,7 @@ export function MenuPreview() {
         window.cancelAnimationFrame(animationFrame.current);
       }
     };
-  }, []);
+  }, [images.length]);
 
   function updateScrollProgress(carousel: HTMLDivElement, scrollLeft = carousel.scrollLeft) {
     const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
@@ -180,7 +173,7 @@ export function MenuPreview() {
               ref={carouselRef}
               style={{ WebkitOverflowScrolling: "touch" }}
             >
-              {menuImages.map((image, index) => (
+              {images.map((image, index) => (
                 <div
                   className="min-w-[72%] snap-start overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:min-w-[46%] lg:min-w-[30%]"
                   key={image}

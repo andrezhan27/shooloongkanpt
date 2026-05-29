@@ -7,7 +7,7 @@ import { type Language, useLanguage } from "@/components/LanguageProvider";
 
 const navItems = [
   { href: "/#home", label: { pt: "Início", en: "Home" } },
-  { href: "/#menu", label: { pt: "Menu", en: "Menu" } },
+  { href: "/menu", label: { pt: "Menu", en: "Menu" } },
   { href: "/#contact", label: { pt: "Contactos", en: "Contact Us" } }
 ];
 const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
