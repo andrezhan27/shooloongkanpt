@@ -23,7 +23,6 @@ const socialLinks = [
 ];
 
 const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
-const privacyPolicyUrl = "https://drive.google.com/file/d/1ZiqLvfXkKviPHelRA2EzlGzT23AWRh5R/view?usp=sharing";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -44,7 +43,11 @@ function TikTokIcon({ className }: { className?: string }) {
   );
 }
 
-export function Footer() {
+export function Footer({
+  privacyPolicyUrl
+}: {
+  privacyPolicyUrl?: string;
+}) {
   const { t } = useLanguage();
 
   return (
@@ -77,14 +80,16 @@ export function Footer() {
             >
               {t({ pt: "Reservar", en: "Book" })}
             </a>
-            <a
-              className="transition hover:text-rice"
-              href={privacyPolicyUrl}
-              rel="noreferrer"
-              target="_blank"
-            >
-              {t({ pt: "Privacidade", en: "Privacy" })}
-            </a>
+            {privacyPolicyUrl ? (
+              <a
+                className="transition hover:text-rice"
+                href={privacyPolicyUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {t({ pt: "Privacidade", en: "Privacy" })}
+              </a>
+            ) : null}
           </div>
           <div className="flex gap-3">
             {socialLinks.map(({ name, href, icon: Icon }) => (

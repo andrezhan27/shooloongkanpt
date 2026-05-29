@@ -5,6 +5,8 @@ import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { Navbar } from "@/components/Navbar";
 
+const privacyPolicyUrl = process.env.PRIVACY_POLICY_LINK;
+
 export const metadata: Metadata = {
   title: "Shoo Loong Kan Portugal | Autêntico Hot Pot Chinês",
   description:
@@ -19,6 +21,18 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <head>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-3L8BRL72KP"
+          strategy="beforeInteractive"
+        />
+        <Script id="google-tag" strategy="beforeInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-3L8BRL72KP');`}
+        </Script>
         <Script id="google-tag-manager" strategy="beforeInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -44,7 +58,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <LanguageProvider>
           <Navbar />
           {children}
-          <Footer />
+          <Footer privacyPolicyUrl={privacyPolicyUrl} />
         </LanguageProvider>
       </body>
     </html>
