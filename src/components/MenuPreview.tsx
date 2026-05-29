@@ -23,6 +23,7 @@ export function MenuPreview() {
   const [slideOffset, setSlideOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollFrame = useRef<number | null>(null);
+  const animationFrame = useRef<number | null>(null);
 
   useEffect(() => {
     function updateCarouselMetrics() {
@@ -64,6 +65,10 @@ export function MenuPreview() {
       if (scrollFrame.current !== null) {
         window.cancelAnimationFrame(scrollFrame.current);
       }
+
+      if (animationFrame.current !== null) {
+        window.cancelAnimationFrame(animationFrame.current);
+      }
     };
   }, []);
 
@@ -98,11 +103,36 @@ export function MenuPreview() {
     const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
     const targetScrollLeft = Math.min(maxScrollLeft, nextIndex * slideOffset);
 
-    updateScrollProgress(carousel, targetScrollLeft);
-    carousel.scrollTo({
-      behavior: "smooth",
-      left: targetScrollLeft
-    });
+    animateScrollTo(carousel, targetScrollLeft);
+  }
+
+  function animateScrollTo(carousel: HTMLDivElement, targetScrollLeft: number) {
+    if (animationFrame.current !== null) {
+      window.cancelAnimationFrame(animationFrame.current);
+    }
+
+    const startScrollLeft = carousel.scrollLeft;
+    const distance = targetScrollLeft - startScrollLeft;
+    const duration = 520;
+    const startTime = window.performance.now();
+
+    function tick(now: number) {
+      const elapsed = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - elapsed, 3);
+      const nextScrollLeft = startScrollLeft + distance * eased;
+
+      carousel.scrollLeft = nextScrollLeft;
+      updateScrollProgress(carousel, nextScrollLeft);
+
+      if (elapsed < 1) {
+        animationFrame.current = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      animationFrame.current = null;
+    }
+
+    animationFrame.current = window.requestAnimationFrame(tick);
   }
 
   function handleScroll() {
@@ -145,7 +175,7 @@ export function MenuPreview() {
         <div className="mt-8 sm:mt-10">
           <div className="relative">
             <div
-              className="flex snap-x snap-proximity gap-4 overflow-x-auto scroll-smooth overscroll-x-contain scroll-px-4 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] sm:snap-mandatory sm:gap-5 [&::-webkit-scrollbar]:hidden"
+              className="flex snap-x snap-proximity gap-4 overflow-x-auto overscroll-x-contain scroll-px-4 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] sm:snap-none sm:gap-5 [&::-webkit-scrollbar]:hidden"
               onScroll={handleScroll}
               ref={carouselRef}
               style={{ WebkitOverflowScrolling: "touch" }}

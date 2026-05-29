@@ -22,6 +22,8 @@ const socialLinks = [
   }
 ];
 
+const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
+
 function TikTokIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -66,9 +68,14 @@ export function Footer() {
             <Link className="transition hover:text-rice" href="/#contact">
               {t({ pt: "Contactos", en: "Contact" })}
             </Link>
-            <Link className="transition hover:text-rice" href="/#book">
+            <a
+              className="transition hover:text-rice"
+              href={reserveUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
               {t({ pt: "Reservar", en: "Book" })}
-            </Link>
+            </a>
           </div>
           <div className="flex gap-3">
             {socialLinks.map(({ name, href, icon: Icon }) => (

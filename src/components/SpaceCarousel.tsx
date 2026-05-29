@@ -47,34 +47,32 @@ export function SpaceCarousel() {
           </h2>
         </div>
 
-        <div className="grid gap-4 @5xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="relative min-h-[340px] overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.04] sm:min-h-[420px] @5xl:min-h-[620px]">
+        <div>
+          <div className="relative aspect-[16/10] min-h-[240px] overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.04] sm:aspect-[16/8] sm:min-h-[300px] lg:min-h-[380px] xl:min-h-[420px]">
             <img
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
               key={current.image}
               src={current.image}
             />
-            <div className="absolute bottom-0 left-0 right-0 flex items-end justify-end gap-4 p-5 sm:p-8">
-              <div className="hidden gap-2 sm:flex">
-                <CarouselButton label="Previous image" onClick={() => go(-1)}>
-                  <ChevronLeft size={19} />
-                </CarouselButton>
-                <CarouselButton label="Next image" onClick={() => go(1)}>
-                  <ChevronRight size={19} />
-                </CarouselButton>
-              </div>
+            <div className="absolute inset-y-0 left-0 right-0 hidden items-center justify-between px-4 sm:flex sm:px-6">
+              <CarouselButton label="Previous image" onClick={() => go(-1)}>
+                <ChevronLeft size={19} />
+              </CarouselButton>
+              <CarouselButton label="Next image" onClick={() => go(1)}>
+                <ChevronRight size={19} />
+              </CarouselButton>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 @5xl:grid-cols-1 @5xl:gap-3">
+          <div className="mt-3 grid grid-cols-4 gap-2 sm:mt-4 sm:gap-3">
             {spaces.map((space, index) => (
               <button
                 aria-label={t(space.title)}
-                className={`group overflow-hidden rounded-lg border transition ${
+                className={`group overflow-hidden rounded-lg border bg-night/35 transition ${
                   active === index
                     ? "border-gold"
-                    : "border-rice/10 opacity-70 hover:border-rice/32 hover:opacity-100"
+                    : "border-rice/20 opacity-75 hover:border-rice/45 hover:opacity-100"
                 }`}
                 key={space.image}
                 onClick={() => setActive(index)}
@@ -82,7 +80,7 @@ export function SpaceCarousel() {
               >
                 <img
                   alt=""
-                  className="aspect-[1.12] h-full w-full object-cover transition duration-500 group-hover:scale-105 @5xl:aspect-[1.8]"
+                  className="aspect-[1.65] h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   src={space.image}
                 />
               </button>

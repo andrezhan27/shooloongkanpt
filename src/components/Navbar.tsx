@@ -55,7 +55,7 @@ export function Navbar() {
           </div>
           <div className="hidden sm:block">
             <a
-              className="border-beam inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              className="border-beam inline-flex min-h-12 w-36 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
               href={reserveUrl}
               rel="noreferrer"
               target="_blank"
