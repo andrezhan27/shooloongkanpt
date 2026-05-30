@@ -110,11 +110,11 @@ export function Footer({
       <p className="mx-auto mt-8 max-w-7xl text-xs text-rice/42">
         <a
           className="transition hover:text-rice"
-          href="https://virafoods.pt"
+          href="https://intelis.pt"
           rel="noreferrer"
           target="_blank"
         >
-          Designed by ViraFoods.pt. All Rights Reserved.
+          Designed by Intelis Digital. All Rights Reserved.
         </a>
       </p>
     </footer>
