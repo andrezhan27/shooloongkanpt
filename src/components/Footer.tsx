@@ -114,7 +114,7 @@ export function Footer({
           rel="noreferrer"
           target="_blank"
         >
-          Designed by Intelis Digital. All Rights Reserved.
+          Designed by Intelis. All Rights Reserved.
         </a>
       </p>
     </footer>
