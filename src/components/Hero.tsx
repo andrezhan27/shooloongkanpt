@@ -1,10 +1,10 @@
 "use client";
 
 import { CalendarCheck, Flame } from "lucide-react";
+import Link from "next/link";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const heroImage = "/images/hero/hero.webp";
-const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
 
 export function Hero() {
   const { t } = useLanguage();
@@ -44,17 +44,15 @@ export function Hero() {
           </HeroLine>
           <HeroLine delay={380}>
             <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
-              <a
+              <Link
                 className="border-beam inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.12em] text-rice shadow-glow transition duration-300 hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:w-auto"
-                href={reserveUrl}
-                rel="noreferrer"
-                target="_blank"
+                href="/reservations"
               >
                 <CalendarCheck size={18} />
                 <span className="whitespace-nowrap">
                   {t({ pt: "Reservar", en: "Book a table" })}
                 </span>
-              </a>
+              </Link>
             </div>
           </HeroLine>
         </div>

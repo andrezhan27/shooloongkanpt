@@ -1,12 +1,12 @@
 "use client";
 
 import { CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
+import Link from "next/link";
 import { BoltFoodLogo } from "@/components/BoltFoodLogo";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const boltFoodUrl = "https://food.bolt.eu/en/386-lisbon/p/195603-shoo-loong-kan-hotpot/";
 const mapsUrl = "https://maps.app.goo.gl/VV8F4Fe51Pq2miyHA";
-const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
 
 export function BookTable() {
   const { t } = useLanguage();
@@ -52,15 +52,13 @@ export function BookTable() {
           </div>
 
           <div className="grid gap-3 py-4 sm:grid-cols-2">
-            <a
+            <Link
               className="border-beam inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold uppercase tracking-[0.12em] text-rice shadow-glow transition duration-300 hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-              href={reserveUrl}
-              rel="noreferrer"
-              target="_blank"
+              href="/reservations"
             >
               <CalendarCheck size={18} />
               <span className="whitespace-nowrap">{t({ pt: "Reservar", en: "Reserve" })}</span>
-            </a>
+            </Link>
             <a
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-rice/14 bg-night/35 px-5 text-sm font-semibold uppercase tracking-[0.12em] text-rice/82 transition hover:scale-[1.01] hover:border-gold hover:text-rice focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
               href={boltFoodUrl}

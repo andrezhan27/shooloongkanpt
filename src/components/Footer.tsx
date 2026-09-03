@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Facebook, Instagram } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const socialLinks = [
@@ -21,8 +22,6 @@ const socialLinks = [
     icon: Facebook
   }
 ];
-
-const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -44,11 +43,16 @@ function TikTokIcon({ className }: { className?: string }) {
 }
 
 export function Footer({
-  privacyPolicyUrl
+  privacyPolicyUrl,
+  termsAndConditionsUrl
 }: {
   privacyPolicyUrl?: string;
+  termsAndConditionsUrl?: string;
 }) {
   const { t } = useLanguage();
+  const pathname = usePathname();
+
+  if (pathname === "/reservations") return null;
 
   return (
     <footer className="border-t border-rice/10 px-5 py-10 sm:px-8">
@@ -72,14 +76,22 @@ export function Footer({
             <Link className="transition hover:text-rice" href="/#contact">
               {t({ pt: "Contactos", en: "Contact" })}
             </Link>
-            <a
+            <Link
               className="transition hover:text-rice"
-              href={reserveUrl}
-              rel="noreferrer"
-              target="_blank"
+              href="/reservations"
             >
               {t({ pt: "Reservar", en: "Book" })}
-            </a>
+            </Link>
+            {termsAndConditionsUrl ? (
+              <a
+                className="transition hover:text-rice"
+                href={termsAndConditionsUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {t({ pt: "Termos e condições", en: "Terms & Conditions" })}
+              </a>
+            ) : null}
             {privacyPolicyUrl ? (
               <a
                 className="transition hover:text-rice"
@@ -90,6 +102,14 @@ export function Footer({
                 {t({ pt: "Privacidade", en: "Privacy" })}
               </a>
             ) : null}
+            <a
+              className="transition hover:text-rice"
+              href="https://www.livroreclamacoes.pt/Inicio/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Livro de Reclamações
+            </a>
           </div>
           <div className="flex gap-3">
             {socialLinks.map(({ name, href, icon: Icon }) => (

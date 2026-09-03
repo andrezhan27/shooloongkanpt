@@ -19,6 +19,10 @@
 :root {
   color-scheme: dark;
   --nav-height: 76px;
+  --promotion-banner-bg: #a81218;
+  --promotion-banner-text: #f7efe3;
+  --promotion-banner-link: #c99a4a;
+  --promotion-banner-border: #64080b;
 }
 
 @media (width < 640px) {
@@ -46,6 +50,29 @@ body {
     linear-gradient(180deg, #070403 0%, #120a07 48%, #080504 100%);
   color: var(--color-rice);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+body > .site-promotion-banner {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: clamp(0.75rem, 2.8vw, 0.9rem);
+}
+
+body > .site-promotion-banner > div {
+  flex-wrap: nowrap;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+body > .site-promotion-banner > div > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body:has(> .site-promotion-banner) header.fixed {
+  position: sticky;
 }
 
 ::selection {

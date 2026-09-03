@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@andrezhan27/intelis-restaurant-ui"],
   experimental: {
     inlineCss: true
   },

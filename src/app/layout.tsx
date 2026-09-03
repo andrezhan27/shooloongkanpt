@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { PromotionBanner } from "@andrezhan27/intelis-restaurant-ui";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { Navbar } from "@/components/Navbar";
+import { getRestaurantInfo, restaurantInfo } from "@/lib/restaurantInfo";
 
-const privacyPolicyUrl = process.env.PRIVACY_POLICY_LINK;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Shoo Loong Kan Portugal | Autêntico Hot Pot Chinês",
@@ -14,11 +16,13 @@ export const metadata: Metadata = {
     "Premium Chinese hotpot in Lisbon with traditional Sichuan ritual, rich broths, and an intimate red-and-wood dining room."
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const restaurantDetails = await getRestaurantInfo();
+
   return (
     <html lang="pt">
       <head>
@@ -48,6 +52,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       </head>
       <body>
+        <PromotionBanner
+          className="site-promotion-banner"
+          restaurantId={restaurantInfo.databaseId}
+        />
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-5WRCW76P"
@@ -59,7 +67,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <LanguageProvider>
           <Navbar />
           {children}
-          <Footer privacyPolicyUrl={privacyPolicyUrl} />
+          <Footer
+            privacyPolicyUrl={restaurantDetails.privacyPolicyUrl}
+            termsAndConditionsUrl={restaurantDetails.termsAndConditionsUrl}
+          />
         </LanguageProvider>
         <Analytics />
       </body>

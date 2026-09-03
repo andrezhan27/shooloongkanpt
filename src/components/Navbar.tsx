@@ -2,6 +2,7 @@
 
 import { CalendarCheck, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { type Language, useLanguage } from "@/components/LanguageProvider";
 
@@ -10,15 +11,23 @@ const navItems = [
   { href: "/menu", label: { pt: "Menu", en: "Menu" } },
   { href: "/#contact", label: { pt: "Contactos", en: "Contact Us" } }
 ];
-const reserveUrl = "https://www.google.com/maps/reserve/v/dine/c/d4SDHxhazOM";
 
 export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const isReservationsPage = pathname === "/reservations";
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4">
-      <nav className="glass-panel mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between gap-3 rounded-full px-3 sm:px-5">
+      <nav
+        className="glass-panel mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between gap-3 rounded-full px-3 sm:px-5"
+        style={
+          isReservationsPage
+            ? { background: "var(--color-night)" }
+            : undefined
+        }
+      >
         <Link
           href="/#home"
           className="flex min-w-0 shrink items-center gap-2 sm:gap-3"
@@ -54,15 +63,13 @@ export function Navbar() {
             <LanguageToggle language={language} setLanguage={setLanguage} />
           </div>
           <div className="hidden sm:block">
-            <a
+            <Link
               className="border-beam inline-flex min-h-12 w-36 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-              href={reserveUrl}
-              rel="noreferrer"
-              target="_blank"
+              href="/reservations"
             >
               <CalendarCheck size={17} strokeWidth={1.8} />
               {t({ pt: "Reservar", en: "Book" })}
-            </a>
+            </Link>
           </div>
           <button
             aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -94,16 +101,14 @@ export function Navbar() {
                 {t(item.label)}
               </Link>
             ))}
-            <a
-              href={reserveUrl}
+            <Link
               className="border-beam mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:hidden"
+              href="/reservations"
               onClick={() => setIsOpen(false)}
-              rel="noreferrer"
-              target="_blank"
             >
               <CalendarCheck size={17} strokeWidth={1.8} />
               {t({ pt: "Reservar", en: "Book" })}
-            </a>
+            </Link>
           </div>
         </div>
       ) : null}
