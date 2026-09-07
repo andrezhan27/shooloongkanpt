@@ -71,6 +71,13 @@ body > .site-promotion-banner > div > span {
   white-space: nowrap;
 }
 
+body > .site-promotion-banner + div [role="dialog"] article h3 {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  font-weight: 400;
+}
+
 body:has(> .site-promotion-banner) header.fixed {
   position: sticky;
 }
