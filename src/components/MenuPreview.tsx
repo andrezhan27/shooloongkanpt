@@ -168,7 +168,7 @@ export function MenuPreview({ images }: MenuPreviewProps) {
         <div className="mt-8 sm:mt-10">
           <div className="relative">
             <div
-              className="flex snap-x snap-proximity gap-4 overflow-x-auto overscroll-x-contain scroll-px-4 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] sm:snap-none sm:gap-5 [&::-webkit-scrollbar]:hidden"
+              className="flex snap-x snap-proximity gap-4 overflow-x-auto overscroll-x-contain scroll-px-4 touch-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:snap-none sm:gap-5 [&::-webkit-scrollbar]:hidden"
               onScroll={handleScroll}
               ref={carouselRef}
               style={{ WebkitOverflowScrolling: "touch" }}
