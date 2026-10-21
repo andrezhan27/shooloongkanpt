@@ -1,86 +1,124 @@
 "use client";
 
-import { ArrowUpRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 
 type MenuPreviewProps = { images: string[] };
+type CarouselMotion = { animation: Animation; distance: number; kind: "auto" | "manual" };
 
 const autoplaySpeed = 28;
-const idleDelay = 650;
 const wrap = (value: number, width: number) => ((value % width) + width) % width;
 
 export function MenuPreview({ images }: MenuPreviewProps) {
   const { t } = useLanguage();
-  const [isPaused, setIsPaused] = useState(false);
   // Each repeated group must fill the viewport, even with a small image set.
   const cycleImages = images.length > 1
     ? Array.from({ length: Math.ceil(4 / images.length) }, () => images).flat()
     : images;
-  const slides = images.length > 1 ? [...cycleImages, ...cycleImages, ...cycleImages] : images;
+  // One group before and two after the active group keep every manual offset
+  // covered throughout a full transform loop.
+  const slides = images.length > 1 ? Array.from({ length: 4 }, () => cycleImages).flat() : images;
   const carouselRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const metricsRef = useRef({ loopWidth: 0, slideOffset: 0 });
-  const animationFrame = useRef<number | null>(null);
-  const pausedRef = useRef(false);
+  const metricsRef = useRef({ loopWidth: 0, slideOffset: 0, viewportWidth: 0 });
+  const motionRef = useRef<CarouselMotion | null>(null);
+  const programmaticScrollRef = useRef(0);
   const draggingRef = useRef(false);
   const touchingRef = useRef(false);
   const mouseDragRef = useRef<{ pointerId: number; lastX: number } | null>(null);
   const reducedMotionRef = useRef(false);
-  const resumeAt = useRef(0);
+  const visibleRef = useRef(false);
 
-  useEffect(() => {
-    pausedRef.current = isPaused;
-  }, [isPaused]);
+  function motionOffset() {
+    const motion = motionRef.current;
+    const progress = motion?.animation.effect?.getComputedTiming().progress ?? 0;
+    return motion ? progress * motion.distance : 0;
+  }
 
-  function updateScrollProgress(carousel: HTMLDivElement) {
+  function updateScrollProgress() {
     const thumb = progressRef.current;
     if (!thumb) return;
-    const { loopWidth } = metricsRef.current;
-    const thumbWidth = loopWidth ? Math.min(100, (carousel.clientWidth / loopWidth) * 100) : 100;
-    const progress = loopWidth ? wrap(carousel.scrollLeft - loopWidth, loopWidth) / loopWidth : 0;
-    thumb.style.width = `${thumbWidth}%`;
-    thumb.style.left = `${progress * (100 - thumbWidth)}%`;
+    const { loopWidth, viewportWidth } = metricsRef.current;
+    const thumbWidth = loopWidth ? Math.min(viewportWidth, viewportWidth * viewportWidth / loopWidth) : viewportWidth;
+    const position = programmaticScrollRef.current + motionOffset();
+    const progress = loopWidth ? wrap(position - loopWidth, loopWidth) / loopWidth : 0;
+    thumb.style.width = `${thumbWidth}px`;
+    thumb.style.transform = `translate3d(${progress * (viewportWidth - thumbWidth)}px, 0, 0)`;
   }
 
   function setScrollPosition(carousel: HTMLDivElement, position: number) {
     const { loopWidth } = metricsRef.current;
     carousel.scrollLeft = loopWidth ? loopWidth + wrap(position - loopWidth, loopWidth) : position;
-    updateScrollProgress(carousel);
+    programmaticScrollRef.current = carousel.scrollLeft;
+    updateScrollProgress();
+  }
+
+  function stopMotion() {
+    const motion = motionRef.current;
+    const carousel = carouselRef.current;
+    if (!motion) return;
+    const offset = motionOffset();
+    motionRef.current = null;
+    motion.animation.cancel();
+    // Transfer the visual offset to native scrolling only when interaction starts.
+    if (carousel) setScrollPosition(carousel, carousel.scrollLeft + offset);
   }
 
   function pauseForInteraction() {
-    resumeAt.current = performance.now() + idleDelay;
-    if (animationFrame.current !== null) {
-      cancelAnimationFrame(animationFrame.current);
-      animationFrame.current = null;
-    }
+    stopMotion();
+  }
+
+  function startAutoplay() {
+    const track = trackRef.current;
+    const { loopWidth } = metricsRef.current;
+    if (!track || loopWidth <= 0 || motionRef.current || !visibleRef.current ||
+      document.hidden || reducedMotionRef.current || draggingRef.current || touchingRef.current) return;
+
+    const animation = track.animate([
+      { transform: "translate3d(0, 0, 0)" },
+      { transform: `translate3d(${-loopWidth}px, 0, 0)` }
+    ], { duration: loopWidth / autoplaySpeed * 1000, iterations: Infinity, easing: "linear" });
+    motionRef.current = { animation, distance: loopWidth, kind: "auto" };
   }
 
   function finishPointerInteraction() {
     if (!draggingRef.current && !mouseDragRef.current) return;
     draggingRef.current = false;
     mouseDragRef.current = null;
-    resumeAt.current = performance.now() + idleDelay;
+    startAutoplay();
   }
 
   function finishTouchInteraction() {
     if (!touchingRef.current) return;
     touchingRef.current = false;
     finishPointerInteraction();
-    resumeAt.current = performance.now() + idleDelay;
+    startAutoplay();
+  }
+
+  function handleScroll() {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    // Ignore the scroll event from our own one-time handoff or loop normalization.
+    if (Math.abs(carousel.scrollLeft - programmaticScrollRef.current) < 1) return;
+    pauseForInteraction();
+    setScrollPosition(carousel, carousel.scrollLeft);
+    startAutoplay();
   }
 
   useEffect(() => {
     const carousel = carouselRef.current;
-    if (!carousel) return;
+    const track = trackRef.current;
+    if (!carousel || !track) return;
 
     function updateCarouselMetrics() {
-      if (!carousel) return;
-      const first = carousel.children[0];
-      const second = carousel.children[1];
-      const nextCycle = images.length > 1 ? carousel.children[cycleImages.length] : null;
+      if (!carousel || !track) return;
+      stopMotion();
+      const first = track.children[0];
+      const second = track.children[1];
+      const nextCycle = images.length > 1 ? track.children[cycleImages.length] : null;
       const previousWidth = metricsRef.current.loopWidth;
       const progress = previousWidth ? wrap(carousel.scrollLeft - previousWidth, previousWidth) / previousWidth : 0;
       const loopWidth = first && nextCycle
@@ -88,26 +126,26 @@ export function MenuPreview({ images }: MenuPreviewProps) {
         : 0;
       metricsRef.current = {
         loopWidth,
-        slideOffset: first && second ? second.getBoundingClientRect().left - first.getBoundingClientRect().left : 0
+        slideOffset: first && second ? second.getBoundingClientRect().left - first.getBoundingClientRect().left : 0,
+        viewportWidth: carousel.clientWidth
       };
       setScrollPosition(carousel, loopWidth + progress * loopWidth);
     }
 
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     function updateMotionPreference() {
+      pauseForInteraction();
       reducedMotionRef.current = motionPreference.matches;
-      pausedRef.current = motionPreference.matches;
-      setIsPaused(motionPreference.matches);
     }
     updateMotionPreference();
     motionPreference.addEventListener("change", updateMotionPreference);
     updateCarouselMetrics();
     const resizeObserver = new ResizeObserver(updateCarouselMetrics);
     resizeObserver.observe(carousel);
+    resizeObserver.observe(track);
 
-    let isVisible = false;
     const visibilityObserver = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
+      visibleRef.current = entry.isIntersecting;
     });
     visibilityObserver.observe(carousel);
 
@@ -115,42 +153,37 @@ export function MenuPreview({ images }: MenuPreviewProps) {
       finishPointerInteraction();
       finishTouchInteraction();
     }
+    function handleVisibility() {
+      if (document.hidden) {
+        finishInteraction();
+        stopMotion();
+      }
+    }
     window.addEventListener("pointerup", finishPointerInteraction);
     window.addEventListener("pointercancel", finishPointerInteraction);
     window.addEventListener("mouseup", finishPointerInteraction);
     window.addEventListener("touchend", finishTouchInteraction);
     window.addEventListener("touchcancel", finishTouchInteraction);
     window.addEventListener("blur", finishInteraction);
+    document.addEventListener("visibilitychange", handleVisibility);
 
-    let previousTime = 0;
-    let position = carousel.scrollLeft;
-    let lastAppliedPosition = carousel.scrollLeft;
     let frame: number;
-    function tick(now: number) {
-      const elapsed = previousTime ? Math.min(now - previousTime, 50) : 0;
-      previousTime = now;
-      if (carousel && isVisible && !document.hidden && !pausedRef.current &&
-        !draggingRef.current && !touchingRef.current && now >= resumeAt.current &&
-        animationFrame.current === null && metricsRef.current.loopWidth > 0) {
-        // Preserve subpixel movement on browsers that round scrollLeft.
-        if (Math.abs(carousel.scrollLeft - lastAppliedPosition) > 1) position = carousel.scrollLeft;
-        position += autoplaySpeed * elapsed / 1000;
-        setScrollPosition(carousel, position);
-        lastAppliedPosition = carousel.scrollLeft;
-        const { loopWidth } = metricsRef.current;
-        position = loopWidth + wrap(position - loopWidth, loopWidth);
-      } else if (carousel) {
-        position = carousel.scrollLeft;
-        lastAppliedPosition = carousel.scrollLeft;
+    function tick() {
+      const canAutoplay = visibleRef.current && !document.hidden && !reducedMotionRef.current &&
+        !draggingRef.current && !touchingRef.current;
+      if (canAutoplay) {
+        startAutoplay();
+      } else if (motionRef.current?.kind === "auto") {
+        stopMotion();
       }
+      updateScrollProgress();
       frame = requestAnimationFrame(tick);
     }
     frame = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(frame);
-      if (animationFrame.current !== null) cancelAnimationFrame(animationFrame.current);
-      animationFrame.current = null;
+      stopMotion();
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       motionPreference.removeEventListener("change", updateMotionPreference);
@@ -160,28 +193,31 @@ export function MenuPreview({ images }: MenuPreviewProps) {
       window.removeEventListener("touchend", finishTouchInteraction);
       window.removeEventListener("touchcancel", finishTouchInteraction);
       window.removeEventListener("blur", finishInteraction);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [images.length, cycleImages.length]);
 
   function goToImage(direction: number) {
-    const carousel = carouselRef.current;
+    const track = trackRef.current;
     const { slideOffset } = metricsRef.current;
-    if (!carousel || !slideOffset) return;
+    if (!track || !slideOffset) return;
     pauseForInteraction();
-    const start = carousel.scrollLeft;
+    const distance = direction * slideOffset;
     if (reducedMotionRef.current) {
-      setScrollPosition(carousel, start + direction * slideOffset);
+      const carousel = carouselRef.current;
+      if (carousel) setScrollPosition(carousel, carousel.scrollLeft + distance);
       return;
     }
-    const startTime = performance.now();
-    function tick(now: number) {
-      if (!carousel) return;
-      const elapsed = Math.min(1, (now - startTime) / 520);
-      const eased = 1 - Math.pow(1 - elapsed, 3);
-      setScrollPosition(carousel, start + direction * slideOffset * eased);
-      animationFrame.current = elapsed < 1 ? requestAnimationFrame(tick) : null;
-    }
-    animationFrame.current = requestAnimationFrame(tick);
+    const animation = track.animate([
+      { transform: "translate3d(0, 0, 0)" },
+      { transform: `translate3d(${-distance}px, 0, 0)` }
+    ], { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" });
+    motionRef.current = { animation, distance, kind: "manual" };
+    animation.onfinish = () => {
+      if (motionRef.current?.animation !== animation) return;
+      stopMotion();
+      startAutoplay();
+    };
   }
 
   return (
@@ -191,30 +227,20 @@ export function MenuPreview({ images }: MenuPreviewProps) {
           <h2 className="mt-4 max-w-3xl text-balance font-display text-[clamp(1.9rem,5.5vw,2.5rem)] font-semibold leading-[0.96] text-gold sm:leading-none">
             {t({ pt: "O NOSSO MENU", en: "OUR MENU" })}
           </h2>
-          <div className="flex shrink-0 items-center gap-5">
-            <Link
-              className="hidden min-h-12 items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-rice/72 transition hover:text-rice md:inline-flex md:min-h-0"
-              href="/menu"
-            >
-              {t({ pt: "Explorar menu", en: "Explore menu" })}
-              <ArrowUpRight size={17} />
-            </Link>
-            {images.length > 1 && (
-              <CarouselButton
-                label={isPaused ? t({ pt: "Retomar movimento do menu", en: "Resume menu movement" }) : t({ pt: "Pausar movimento do menu", en: "Pause menu movement" })}
-                onClick={() => setIsPaused((paused) => !paused)}
-              >
-                {isPaused ? <Play size={17} /> : <Pause size={17} />}
-              </CarouselButton>
-            )}
-          </div>
+          <Link
+            className="hidden min-h-12 items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-rice/72 transition hover:text-rice md:inline-flex md:min-h-0"
+            href="/menu"
+          >
+            {t({ pt: "Explorar menu", en: "Explore menu" })}
+            <ArrowUpRight size={17} />
+          </Link>
         </div>
 
         <div className="mt-8 sm:mt-10">
           <div className="relative">
             <div
               aria-label={t({ pt: "Imagens do menu. Desliza ou usa as setas para explorar.", en: "Menu images. Swipe or use the arrow keys to explore." })}
-              className="flex cursor-grab gap-4 overflow-x-auto overscroll-x-contain touch-auto select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold sm:gap-5 [&::-webkit-scrollbar]:hidden"
+              className="@container cursor-grab overflow-x-auto overscroll-x-contain touch-auto select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-scrollbar]:hidden"
               onFocus={pauseForInteraction}
               onKeyDown={(event) => {
                 if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
@@ -246,38 +272,32 @@ export function MenuPreview({ images }: MenuPreviewProps) {
               onTouchStart={() => { touchingRef.current = true; pauseForInteraction(); }}
               onTouchEnd={finishTouchInteraction}
               onTouchCancel={finishTouchInteraction}
-              onScroll={() => {
-                const carousel = carouselRef.current;
-                if (!carousel) return;
-                if (performance.now() < resumeAt.current) resumeAt.current = performance.now() + idleDelay;
-                const { loopWidth } = metricsRef.current;
-                if (loopWidth && (carousel.scrollLeft < loopWidth || carousel.scrollLeft >= loopWidth * 2)) {
-                  setScrollPosition(carousel, carousel.scrollLeft);
-                } else {
-                  updateScrollProgress(carousel);
-                }
-              }}
+              onScroll={handleScroll}
               onWheel={pauseForInteraction}
               ref={carouselRef}
               role="region"
               style={{ WebkitOverflowScrolling: "touch" }}
               tabIndex={0}
             >
-              {slides.map((image, index) => (
-                <div
-                  aria-hidden={images.length > 1 && (index < cycleImages.length || index >= cycleImages.length * 2) ? true : undefined}
-                  className="min-w-0 flex-[0_0_72%] overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:flex-[0_0_46%] lg:flex-[0_0_30%]"
-                  key={`${index}-${image}`}
-                >
-                  <img
-                    alt=""
-                    className="aspect-[0.92] h-full w-full select-none object-cover sm:aspect-[0.94] lg:aspect-[0.9]"
-                    draggable={false}
-                    loading={index === cycleImages.length || index === 0 ? "eager" : "lazy"}
-                    src={image}
-                  />
+              <div className="w-max">
+                <div className="flex w-max gap-4 will-change-transform sm:gap-5" ref={trackRef}>
+                  {slides.map((image, index) => (
+                    <div
+                      aria-hidden={images.length > 1 && (index < cycleImages.length || index >= cycleImages.length * 2) ? true : undefined}
+                      className="w-[72cqw] flex-none overflow-hidden rounded-lg border border-gold/70 bg-rice/[0.045] sm:w-[46cqw] lg:w-[30cqw]"
+                      key={`${index}-${image}`}
+                    >
+                      <img
+                        alt=""
+                        className="aspect-[0.92] h-full w-full select-none object-cover sm:aspect-[0.94] lg:aspect-[0.9]"
+                        draggable={false}
+                        loading={index === cycleImages.length || index === 0 ? "eager" : "lazy"}
+                        src={image}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
             {images.length > 1 && (
               <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-between px-3 sm:flex sm:px-6">
