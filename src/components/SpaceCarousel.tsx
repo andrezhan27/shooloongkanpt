@@ -33,7 +33,7 @@ export function SpaceCarousel() {
   }
 
   return (
-    <section className="@container px-4 py-16 sm:px-8 sm:py-20 lg:py-24" id="space">
+    <section className="@container scroll-mt-24 px-4 py-16 sm:px-8 sm:py-20 lg:py-24" id="space">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 max-w-3xl">
           {/* <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
@@ -48,7 +48,7 @@ export function SpaceCarousel() {
         </div>
 
         <div>
-          <div className="relative aspect-[16/10] min-h-[240px] overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.04] sm:aspect-[16/8] sm:min-h-[300px] lg:min-h-[380px] xl:min-h-[420px]">
+          <div className="relative aspect-[16/10] min-h-[240px] w-full overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.04] sm:aspect-[16/8] sm:min-h-[300px] lg:min-h-[380px] xl:min-h-[420px]">
             <img
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
@@ -104,7 +104,7 @@ function CarouselButton({
   return (
     <button
       aria-label={label}
-      className="grid size-12 place-items-center rounded-full border border-rice/18 bg-night/55 text-rice backdrop-blur transition hover:scale-105 hover:border-gold hover:text-gold"
+      className="icon-button"
       onClick={onClick}
       type="button"
     >

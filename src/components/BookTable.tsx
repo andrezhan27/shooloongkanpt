@@ -1,12 +1,13 @@
 "use client";
 
-import { CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { BoltFoodLogo } from "@/components/BoltFoodLogo";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const boltFoodUrl = "https://food.bolt.eu/en/386-lisbon/p/195603-shoo-loong-kan-hotpot/";
 const mapsUrl = "https://maps.app.goo.gl/VV8F4Fe51Pq2miyHA";
+const mapsEmbedUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3110.845985716407!2d-9.102026824311954!3d38.767236354374184!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd193194561e6d05%3A0xb14296221b4e5f9a!2sShoo%20Loong%20Kan!5e0!3m2!1sen!2spt!4v1792598502267!5m2!1sen!2spt";
 
 export function BookTable() {
   const { t } = useLanguage();
@@ -14,9 +15,9 @@ export function BookTable() {
   return (
     <section className="px-4 py-14 sm:px-8 sm:py-20 lg:py-24" id="book">
       <div
-        className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.03] shadow-[0_24px_80px_rgb(0_0_0/.22)] backdrop-blur-xl lg:grid-cols-[minmax(0,1fr)_minmax(470px,0.56fr)] lg:items-stretch"
+        className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-rice/10 bg-rice/[0.03] shadow-[0_24px_80px_rgb(0_0_0/.22)] backdrop-blur-xl lg:grid-cols-2"
       >
-        <div className="p-5 sm:p-7 lg:flex lg:flex-col lg:justify-center lg:p-8">
+        <div className="scroll-mt-32 p-5 sm:p-8 lg:p-10" id="contact">
           <div className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-gold">
               {t({ pt: "Reservas", en: "Reservations" })}
@@ -34,33 +35,16 @@ export function BookTable() {
               })}
             </p>
           </div>
-        </div>
-
-        <aside
-          className="scroll-mt-28 p-4 sm:p-5 lg:border-l lg:border-rice/10 lg:p-6"
-          id="contact"
-        >
-          <div className="hidden border-b border-rice/10 pb-4 lg:block">
-            <div className="min-w-0">
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-gold">
-                {t({ pt: "Restaurante", en: "Restaurant" })}
-              </p>
-              <h3 className="mt-2 font-display text-3xl font-semibold leading-none text-rice sm:text-[2rem]">
-                Shoo Loong Kan
-              </h3>
-            </div>
-          </div>
-
-          <div className="grid gap-3 py-4 sm:grid-cols-2">
+          <div className="mt-6 grid gap-3 pb-6 sm:grid-cols-2">
             <Link
-              className="border-beam inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold uppercase tracking-[0.12em] text-rice shadow-glow transition duration-300 hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              className="button button-primary w-full"
               href="/reservations"
             >
               <CalendarCheck size={18} />
               <span className="whitespace-nowrap">{t({ pt: "Reservar", en: "Reserve" })}</span>
             </Link>
             <a
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-rice/14 bg-night/35 px-5 text-sm font-semibold uppercase tracking-[0.12em] text-rice/82 transition hover:scale-[1.01] hover:border-gold hover:text-rice focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
+              className="button button-secondary w-full"
               href={boltFoodUrl}
               rel="noreferrer"
               target="_blank"
@@ -107,7 +91,32 @@ export function BookTable() {
               }
             />
           </div>
-        </aside>
+        </div>
+
+        <div className="flex min-w-0 flex-col border-t border-rice/10 bg-rice/[0.03] lg:border-l lg:border-t-0">
+          <iframe
+            allowFullScreen
+            className="block h-[340px] w-full flex-none border-0 sm:h-[420px] lg:h-full lg:min-h-[480px] lg:flex-1"
+            height="450"
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            src={mapsEmbedUrl}
+            title={t({ pt: "Localização do Shoo Loong Kan no Google Maps", en: "Shoo Loong Kan location on Google Maps" })}
+            width="600"
+          />
+          <a
+            className="flex min-h-16 items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-rice/85 transition hover:bg-rice/5 hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-gold sm:px-8"
+            href={mapsUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <span className="flex items-center gap-2">
+              <MapPin size={17} className="shrink-0 text-gold" />
+              {t({ pt: "Abrir no Google Maps", en: "Open in Google Maps" })}
+            </span>
+            <ArrowUpRight size={18} className="shrink-0" />
+          </a>
+        </div>
       </div>
     </section>
   );

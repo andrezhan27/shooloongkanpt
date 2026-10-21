@@ -37,7 +37,7 @@ export function RouteShell({ eyebrow, title, body, variant }: RouteShellProps) {
             {t(body)}
           </p>
           <Link
-            className="mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-rice/14 px-6 text-sm font-semibold uppercase tracking-[0.16em] text-rice/76 transition hover:scale-[1.02] hover:border-gold hover:text-rice sm:mt-9 sm:w-auto"
+            className="button button-secondary mt-8 w-full sm:mt-9 sm:w-auto"
             href="/"
           >
             <ArrowLeft size={17} />

@@ -29,7 +29,7 @@ export default function MenuPage() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-rice/16 px-6 text-sm font-semibold uppercase tracking-[0.14em] text-rice/78 transition hover:border-gold hover:text-rice"
+              className="button button-secondary"
               href="/"
             >
               <ArrowLeft size={17} />
@@ -37,7 +37,7 @@ export default function MenuPage() {
             </Link>
             <a
               aria-label={t({ pt: "Abrir menu completo", en: "Open full menu" })}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gold px-6 text-sm font-bold uppercase tracking-[0.14em] text-ink transition hover:scale-[1.02] hover:bg-rice"
+              className="button button-gold"
               href={fullMenuImage}
               rel="noreferrer"
               target="_blank"
@@ -60,7 +60,7 @@ export default function MenuPage() {
             })}
           </p>
           <a
-            className="inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-full bg-gold px-6 text-sm font-bold uppercase tracking-[0.14em] text-ink transition hover:scale-[1.02] hover:bg-rice sm:w-auto"
+            className="button button-gold w-full shrink-0 sm:w-auto"
             href={fullMenuImage}
             rel="noreferrer"
             target="_blank"

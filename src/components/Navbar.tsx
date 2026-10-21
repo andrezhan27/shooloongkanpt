@@ -3,12 +3,13 @@
 import { CalendarCheck, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type Language, useLanguage } from "@/components/LanguageProvider";
 
 const navItems = [
   { href: "/#home", label: { pt: "Início", en: "Home" } },
   { href: "/menu", label: { pt: "Menu", en: "Menu" } },
+  { href: "/#space", label: { pt: "Espaço", en: "Space" } },
   { href: "/#contact", label: { pt: "Contactos", en: "Contact Us" } }
 ];
 
@@ -16,17 +17,26 @@ export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const isReservationsPage = pathname === "/reservations";
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isHomePage = pathname === "/";
+
+  useEffect(() => {
+    const updateScroll = () => setIsScrolled(window.scrollY > 24);
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    return () => window.removeEventListener("scroll", updateScroll);
+  }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4">
+    <header
+      className={`site-navbar fixed inset-x-0 top-0 z-50 px-4 py-1.5 transition-colors duration-300 sm:px-8 sm:py-2 ${
+        !isHomePage || isScrolled || isOpen ? "bg-night/95 backdrop-blur-xl" : "bg-transparent"
+      }`}
+      data-over-hero={isHomePage ? "true" : undefined}
+    >
       <nav
-        className="glass-panel mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between gap-3 rounded-full px-3 sm:px-5"
-        style={
-          isReservationsPage
-            ? { background: "var(--color-night)" }
-            : undefined
-        }
+        aria-label={t({ pt: "Navegação principal", en: "Main navigation" })}
+        className="mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between gap-3 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-8"
       >
         <Link
           href="/#home"
@@ -46,7 +56,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-8 lg:flex">
+        <div className="hidden items-center gap-6 xl:flex xl:gap-8">
           {navItems.map((item) => (
             <Link
               className="text-sm font-medium uppercase tracking-[0.18em] text-rice/72 transition hover:text-rice"
@@ -58,22 +68,24 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:block">
-            <LanguageToggle language={language} setLanguage={setLanguage} />
-          </div>
+        <div className="flex items-center gap-3 xl:justify-self-end">
           <div className="hidden sm:block">
             <Link
-              className="border-beam inline-flex min-h-12 w-36 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              className="button button-primary w-36 px-4"
               href="/reservations"
             >
               <CalendarCheck size={17} strokeWidth={1.8} />
               {t({ pt: "Reservar", en: "Book" })}
             </Link>
           </div>
+          <div className="hidden sm:block">
+            <LanguageToggle language={language} setLanguage={setLanguage} />
+          </div>
           <button
-            aria-label={isOpen ? "Close menu" : "Open menu"}
-            className="grid size-11 shrink-0 place-items-center rounded-full border border-rice/12 text-rice lg:hidden"
+            aria-controls="mobile-navigation"
+            aria-expanded={isOpen}
+            aria-label={isOpen ? t({ pt: "Fechar menu", en: "Close menu" }) : t({ pt: "Abrir menu", en: "Open menu" })}
+            className="icon-button size-11 shrink-0 xl:hidden"
             onClick={() => setIsOpen((current) => !current)}
             type="button"
           >
@@ -83,7 +95,7 @@ export function Navbar() {
       </nav>
 
       {isOpen ? (
-        <div className="glass-panel mx-auto mt-3 max-w-7xl rounded-[24px] p-3 lg:hidden">
+        <div className="glass-panel mx-auto my-3 max-w-7xl rounded-[24px] p-3 xl:hidden" id="mobile-navigation">
           <div className="flex flex-col gap-2">
             <div className="mb-1 flex items-center justify-between rounded-2xl bg-rice/6 px-4 py-3 sm:hidden">
               <span className="text-xs font-bold uppercase tracking-[0.18em] text-gold">
@@ -93,7 +105,7 @@ export function Navbar() {
             </div>
             {navItems.map((item) => (
               <Link
-                className="min-h-12 rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-rice/78 transition hover:bg-rice/8 hover:text-rice"
+                className="min-h-12 rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-rice/78 transition hover:bg-rice/8 hover:text-rice"
                 href={item.href}
                 key={item.href}
                 onClick={() => setIsOpen(false)}
@@ -102,7 +114,7 @@ export function Navbar() {
               </Link>
             ))}
             <Link
-              className="border-beam mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.16em] text-rice shadow-glow transition duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold sm:hidden"
+              className="button button-primary mt-2 w-full sm:hidden"
               href="/reservations"
               onClick={() => setIsOpen(false)}
             >
@@ -126,17 +138,18 @@ function LanguageToggle({
   return (
     <div
       aria-label="Language selector"
-      className="relative grid grid-cols-2 rounded-full border border-rice/15 bg-rice/8 p-1 text-xs font-bold uppercase tracking-[0.14em] text-rice/76"
+      className="relative grid grid-cols-2 rounded-[10px] border border-rice/15 bg-rice/8 p-1 text-xs font-bold uppercase tracking-[0.14em] text-rice/76"
       role="group"
     >
       <span
-        className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-rice text-ink transition-transform duration-200 ${
+        className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-md bg-rice text-ink transition-transform duration-200 ${
           language === "pt" ? "translate-x-0" : "translate-x-full"
         }`}
       />
       {(["pt", "en"] as const).map((option) => (
         <button
-          className={`relative z-10 h-9 w-12 rounded-full transition ${
+          aria-pressed={language === option}
+          className={`language-button relative z-10 h-9 w-12 rounded-md transition ${
             language === option ? "text-ink" : "text-rice/70 hover:text-rice"
           }`}
           key={option}

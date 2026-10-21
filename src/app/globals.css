@@ -52,6 +52,13 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+/* Keep Safari's outer scroll boundary consistent with the booking widget. */
+html:has(.reservation-page),
+body:has(.reservation-page) {
+  background: #fff;
+  overscroll-behavior-y: none;
+}
+
 body > .site-promotion-banner {
   max-width: 100%;
   overflow: hidden;
@@ -82,14 +89,27 @@ body:has(> .site-promotion-banner) header.fixed {
   position: sticky;
 }
 
+/* Let the hero extend behind the navbar when a promotion adds it to the flow. */
+body:has(> .site-promotion-banner) .site-navbar[data-over-hero="true"] {
+  margin-bottom: calc(-1 * (var(--nav-height) + 0.75rem));
+}
+
+@media (width >= 640px) {
+  body:has(> .site-promotion-banner) .site-navbar[data-over-hero="true"] {
+    margin-bottom: calc(-1 * (var(--nav-height) + 1rem));
+  }
+}
+
 ::selection {
   background: var(--color-gold);
   color: var(--color-ink);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 button,
@@ -104,42 +124,87 @@ a {
   backdrop-filter: blur(22px);
 }
 
-.border-beam {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
+@layer components {
+  .button {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 200ms ease, border-color 200ms ease,
+      color 200ms ease, box-shadow 200ms ease;
+  }
 
-.border-beam::before {
-  position: absolute;
-  inset: -2px;
-  z-index: -2;
-  border-radius: inherit;
-  background: conic-gradient(
-    from 180deg,
-    transparent,
-    rgb(201 154 74 / 0.2),
-    rgb(208 42 31 / 0.95),
-    rgb(247 239 227 / 0.5),
-    transparent 62%
-  );
-  content: "";
-  opacity: 0;
-  transition: opacity 220ms ease;
-}
+  .button-primary {
+    border-color: rgb(201 154 74 / 0.28);
+    background: linear-gradient(145deg, #a81218, #740e13);
+    color: var(--color-rice);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.2), inset 0 1px rgb(247 239 227 / 0.08);
+  }
 
-.border-beam::after {
-  position: absolute;
-  inset: 1px;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(135deg, #a81218, #5b0709);
-  content: "";
-}
+  .button-primary:hover {
+    border-color: rgb(201 154 74 / 0.6);
+    background: linear-gradient(145deg, #b51b22, #881017);
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.26), inset 0 1px rgb(247 239 227 / 0.1);
+  }
 
-.border-beam:hover::before {
-  opacity: 1;
-  animation: beam-spin 2.5s linear infinite;
+  .button-secondary {
+    border-color: rgb(247 239 227 / 0.24);
+    background: rgb(247 239 227 / 0.025);
+    color: rgb(247 239 227 / 0.88);
+  }
+
+  .button-secondary:hover {
+    border-color: rgb(201 154 74 / 0.6);
+    background: rgb(247 239 227 / 0.06);
+    color: var(--color-rice);
+  }
+
+  .button-gold {
+    border-color: rgb(247 239 227 / 0.12);
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  .button-gold:hover {
+    background: #dbb675;
+  }
+
+  .icon-button {
+    display: inline-flex;
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(247 239 227 / 0.22);
+    border-radius: 8px;
+    background: rgb(9 6 4 / 0.68);
+    color: var(--color-rice);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+  }
+
+  .icon-button:hover {
+    border-color: rgb(201 154 74 / 0.65);
+    background: rgb(201 154 74 / 0.12);
+    color: var(--color-gold);
+  }
+
+  :is(.button, .icon-button, .language-button):focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 4px;
+  }
 }
 
 .wood-grain {
@@ -157,12 +222,6 @@ a {
   animation: hero-fade-in 680ms ease-out both;
   animation-delay: var(--hero-delay, 0ms);
   will-change: opacity, transform;
-}
-
-@keyframes beam-spin {
-  to {
-    rotate: 360deg;
-  }
 }
 
 @keyframes hero-fade-in {

@@ -4,7 +4,7 @@ const restaurantInfo = { reservationWidgetUrl };
 
 export default function ReservationsPage() {
   return (
-    <main className="h-svh bg-white pt-[calc(var(--nav-height)+0.75rem)] sm:pt-[calc(var(--nav-height)+1rem)]">
+    <main className="reservation-page h-dvh bg-white pt-[calc(var(--nav-height)+0.75rem)] sm:pt-[calc(var(--nav-height)+1rem)]">
       <iframe
         className="block h-full w-full border-0"
         loading="eager"

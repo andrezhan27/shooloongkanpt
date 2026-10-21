@@ -57,17 +57,29 @@ export function Footer({
   return (
     <footer className="border-t border-rice/10 px-5 py-10 sm:px-8">
       <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 text-sm text-rice/58 md:flex-row md:items-center">
-        <div>
-          <Link className="font-display text-2xl font-semibold text-rice" href="/#home">
-            Shoo Loong Kan
-          </Link>
-          <p className="mt-2">
-            {t({
-              pt: "Hot Pot Autêntico em Lisboa.",
-              en: "Authentic Hotpot in Lisbon."
-            })}
-          </p>
-        </div>
+        <Link className="flex shrink-0 items-center gap-3 self-start" href="/#home">
+          <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-rice sm:size-12">
+            <img
+              alt=""
+              className="max-h-[88%] max-w-[88%] object-contain"
+              height="48"
+              loading="lazy"
+              src="/images/header/output.webp"
+              width="48"
+            />
+          </span>
+          <span>
+            <span className="block font-display text-2xl font-semibold text-rice">
+              Shoo Loong Kan
+            </span>
+            <span className="mt-1 block">
+              {t({
+                pt: "Hot Pot Autêntico em Lisboa.",
+                en: "Authentic Hotpot in Lisbon."
+              })}
+            </span>
+          </span>
+        </Link>
         <div className="flex flex-col gap-5 sm:items-start md:items-end">
           <div className="flex flex-wrap gap-5 uppercase tracking-[0.16em]">
             <Link className="transition hover:text-rice" href="/menu">
@@ -115,7 +127,7 @@ export function Footer({
             {socialLinks.map(({ name, href, icon: Icon }) => (
               <a
                 aria-label={name}
-                className="flex size-10 items-center justify-center rounded-full border border-rice/14 text-rice/70 transition hover:border-gold/70 hover:bg-gold/10 hover:text-rice focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
+                className="icon-button size-11"
                 href={href}
                 key={name}
                 rel="noreferrer"
